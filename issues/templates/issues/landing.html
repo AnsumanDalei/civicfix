@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}CivicFix — Report. Track. Resolve.{% endblock %}
+{% block content %}
+<div class="hero">
+  <h1>Civic issues shouldn't disappear into a black hole.</h1>
+  <p>CivicFix gives every pothole, garbage pile, and safety hazard a priority score, an SLA clock, and an automatic escalation path when officials miss the deadline.</p>
+  <a href="{% url 'signup' %}" class="btn" style="margin-top:1rem;display:inline-block;">Get started</a>
+</div>
+
+<div class="grid grid-3">
+  <div class="stat-block"><div class="num">{{ stats.total }}</div><div class="label">Total Reported</div></div>
+  <div class="stat-block"><div class="num">{{ stats.open }}</div><div class="label">Currently Open</div></div>
+  <div class="stat-block"><div class="num">{{ stats.resolved }}</div><div class="label">Resolved</div></div>
+</div>
+
+<div class="grid grid-3" style="margin-top:2rem;">
+  <div class="card">
+    <h3>Smart Priority Scoring</h3>
+    <p>Issues are ranked by severity, community upvotes, and age — not just submission order.</p>
+  </div>
+  <div class="card">
+    <h3>Auto-Escalation</h3>
+    <p>Miss the SLA deadline and the issue automatically jumps to the next authority tier.</p>
+  </div>
+  <div class="card">
+    <h3>Duplicate Detection</h3>
+    <p>Reports near an existing open issue are merged automatically instead of cluttering the queue.</p>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Report an Issue — CivicFix{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<h1>Report a Civic Issue</h1>
+<div class="card" style="max-width:640px;">
+  <form method="post" enctype="multipart/form-data" id="issue-form">
+    {% csrf_token %}
+    {% for field in form %}
+      {% if field.name != "latitude" and field.name != "longitude" %}
+        <p>
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {{ field.errors }}
+        </p>
+      {% endif %}
+    {% endfor %}
+
+    <p>
+      <label>Location</label>
+      <button type="button" id="locate-btn" class="btn-outline btn" style="margin-bottom:0.6rem;">📍 Use my current location</button>
+      <div id="map" class="map-preview"
+           data-default-lat="{{ default_map_lat }}"
+           data-default-lng="{{ default_map_lng }}"
+           data-default-zoom="{{ default_map_zoom }}"></div>
+      <span class="helptext">Click on the map to fine-tune the pin, or use the button above.</span>
+    </p>
+    {{ form.latitude }}
+    {{ form.longitude }}
+
+    <button type="submit" class="btn">Submit Report</button>
+  </form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="{% static 'issues/js/app.js' %}"></script>
+{% endblock %}

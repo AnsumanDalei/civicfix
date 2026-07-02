@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}{{ issue.title }} — CivicFix{% endblock %}
+{% block content %}
+<a href="{% url 'issue_list' %}">← Back to all issues</a>
+<div class="card" style="margin-top:1rem;">
+  <h1>{{ issue.title }}</h1>
+  <p>
+    <span class="badge badge-{{ issue.category }}">{{ issue.get_category_display }}</span>
+    <span class="badge badge-{{ issue.status }}">{{ issue.get_status_display }}</span>
+    <span class="badge">Tier {{ issue.get_escalation_tier_display }}</span>
+    {% if issue.is_overdue %}<span class="overdue-flag">OVERDUE — past SLA deadline</span>{% endif %}
+  </p>
+  <p>{{ issue.description }}</p>
+  <p class="helptext">
+    📍 {{ issue.address|default:"Coordinates only" }} ({{ issue.latitude|floatformat:5 }}, {{ issue.longitude|floatformat:5 }})<br>
+    Reported by {{ issue.reported_by.username }} on {{ issue.created_at|date:"d M Y, H:i" }}<br>
+    SLA deadline: {{ issue.sla_deadline|date:"d M Y, H:i" }}<br>
+    Priority score: <span class="priority-score">{{ issue.priority_score }}</span>
+  </p>
+
+  {% if issue.photo %}
+    <img src="{{ issue.photo.url }}" alt="Issue photo" style="max-width:100%;border-radius:4px;margin:1rem 0;">
+  {% endif %}
+
+  <form action="{% url 'upvote_issue' issue.pk %}" method="post">
+    {% csrf_token %}
+    <button type="submit" class="upvote-btn">
+      👍 {{ issue.upvote_count }} Upvote{{ issue.upvote_count|pluralize }}
+      {% if user in issue.upvoted_by.all %}(remove my upvote){% endif %}
+    </button>
+  </form>
+
+  {% if issue.escalation_logs.all %}
+    <h3 style="margin-top:1.5rem;">Escalation History</h3>
+    {% for log in issue.escalation_logs.all %}
+      <div class="issue-row">
+        <div>Tier {{ log.from_tier }} → Tier {{ log.to_tier }} — {{ log.reason }}</div>
+        <div class="helptext">{{ log.created_at|date:"d M Y, H:i" }}</div>
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
+{% endblock %}

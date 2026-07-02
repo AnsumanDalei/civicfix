@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Analytics — CivicFix{% endblock %}
+{% block content %}
+<h1>Transparency Dashboard</h1>
+
+<div class="grid grid-3">
+  <div class="stat-block"><div class="num">{{ total }}</div><div class="label">Total Issues</div></div>
+  <div class="stat-block"><div class="num">{{ resolved }}</div><div class="label">Resolved</div></div>
+  <div class="stat-block"><div class="num">{{ escalated }}</div><div class="label">Currently Escalated</div></div>
+</div>
+
+<div class="grid grid-2" style="margin-top:2rem;">
+  <div class="card">
+    <h3>Issues by Category</h3>
+    <canvas id="categoryChart"></canvas>
+  </div>
+  <div class="card">
+    <h3>Open Issues by Escalation Tier</h3>
+    <canvas id="tierChart"></canvas>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+const byCategory = {{ by_category|safe }};
+const byTier = {{ by_tier|safe }};
+
+new Chart(document.getElementById('categoryChart'), {
+  type: 'bar',
+  data: {
+    labels: byCategory.map(c => c.category),
+    datasets: [
+      { label: 'Total', data: byCategory.map(c => c.total), backgroundColor: '#163454' },
+      { label: 'Resolved', data: byCategory.map(c => c.resolved), backgroundColor: '#2CA69C' }
+    ]
+  },
+  options: { responsive: true, scales: { y: { beginAtZero: true } } }
+});
+
+new Chart(document.getElementById('tierChart'), {
+  type: 'doughnut',
+  data: {
+    labels: byTier.map(t => 'Tier ' + t.escalation_tier),
+    datasets: [{ data: byTier.map(t => t.total), backgroundColor: ['#2CA69C', '#E8A33D', '#C74B39'] }]
+  },
+  options: { responsive: true }
+});
+</script>
+{% endblock %}

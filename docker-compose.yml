@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn civicfix.wsgi:application --bind 0.0.0.0:8000 --workers 3"
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    env_file: .env
+    depends_on: []
+
+  # Runs the SLA auto-escalation check every 30 minutes.
+  # (In place of this, you could point a Jenkins cron job or a
+  # Kubernetes CronJob at `python manage.py escalate_issues`.)
+  escalator:
+    build: .
+    command: >
+      sh -c "while true; do
+               python manage.py escalate_issues;
+               sleep 1800;
+             done"
+    volumes:
+      - .:/app
+    env_file: .env
+    depends_on:
+      - web
+
+volumes:
+  static_volume:
+  media_volume:

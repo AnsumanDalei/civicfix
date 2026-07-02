@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}CivicFix{% endblock %}</title>
+<link rel="stylesheet" href="{% static 'issues/css/style.css' %}">
+</head>
+<body>
+<nav class="navbar">
+  <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'landing' %}{% endif %}" class="brand">Civic<span>Fix</span></a>
+  {% if user.is_authenticated %}
+  <div class="nav-links">
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <a href="{% url 'issue_list' %}">All Issues</a>
+    <a href="{% url 'report_issue' %}" class="btn-nav">+ Report Issue</a>
+    <a href="{% url 'analytics' %}">Analytics</a>
+    <span class="nav-user">Hi, {{ user.username }}</span>
+    <form action="{% url 'logout' %}" method="post" class="inline-form">
+      {% csrf_token %}
+      <button type="submit" class="link-btn">Logout</button>
+    </form>
+  </div>
+  {% else %}
+  <div class="nav-links">
+    <a href="{% url 'login' %}">Login</a>
+    <a href="{% url 'signup' %}" class="btn-nav">Sign Up</a>
+  </div>
+  {% endif %}
+</nav>
+
+<main class="container">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <p>CivicFix &mdash; Smart Civic Issue Reporting & SLA Resolution Tracker</p>
+</footer>
+</body>
+</html>

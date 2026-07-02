@@ -1,0 +1,60 @@
+---
+# Deploys CivicFix to a remote Ubuntu server (e.g. AWS EC2) that already has
+# Docker + Docker Compose installed.
+#
+# Usage:
+#   ansible-playbook -i inventory.ini ansible/deploy.yml
+#
+# inventory.ini example:
+#   [civicfix_servers]
+#   civicfix-prod ansible_host=<EC2_PUBLIC_IP> ansible_user=ubuntu
+
+- name: Deploy CivicFix
+  hosts: civicfix_servers
+  become: true
+  vars:
+    app_dir: /opt/civicfix
+    repo_url: "https://github.com/YOUR_USERNAME/civicfix.git"
+
+  tasks:
+    - name: Ensure git is installed
+      apt:
+        name: git
+        state: present
+        update_cache: true
+
+    - name: Ensure Docker is installed
+      apt:
+        name:
+          - docker.io
+          - docker-compose-v2
+        state: present
+
+    - name: Ensure Docker service is running
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Clone or update CivicFix repository
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ app_dir }}"
+        version: main
+        force: true
+
+    - name: Copy environment file
+      template:
+        src: templates/env.j2
+        dest: "{{ app_dir }}/.env"
+        mode: "0600"
+
+    - name: Build and start containers
+      command: docker compose up -d --build
+      args:
+        chdir: "{{ app_dir }}"
+
+    - name: Run database migrations inside the web container
+      command: docker compose exec -T web python manage.py migrate
+      args:
+        chdir: "{{ app_dir }}"

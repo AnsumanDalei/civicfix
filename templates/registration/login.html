@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Login — CivicFix{% endblock %}
+{% block content %}
+<div class="card" style="max-width:420px;margin:2rem auto;">
+  <h2>Log in</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <p>
+      <label for="id_username">Username</label>
+      {{ form.username }}
+    </p>
+    <p>
+      <label for="id_password">Password</label>
+      {{ form.password }}
+    </p>
+    <button type="submit" class="btn">Log in</button>
+  </form>
+  <p style="margin-top:1rem;">No account? <a href="{% url 'signup' %}">Sign up</a></p>
+</div>
+{% endblock %}

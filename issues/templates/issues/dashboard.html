@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — CivicFix{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+
+<div class="grid grid-3">
+  <div class="stat-block"><div class="num">{{ total_open }}</div><div class="label">Open Issues (all users)</div></div>
+  <div class="stat-block"><div class="num">{{ overdue_count }}</div><div class="label">Overdue / Escalated</div></div>
+  <div class="stat-block"><div class="num">{{ my_issues.count }}</div><div class="label">Reported by You</div></div>
+</div>
+
+<div class="grid grid-2" style="margin-top:2rem;align-items:start;">
+  <div class="card">
+    <h3>Top Priority Right Now</h3>
+    {% if top_priority %}
+      {% for issue in top_priority %}
+        <div class="issue-row">
+          <div>
+            <a href="{% url 'issue_detail' issue.pk %}"><strong>{{ issue.title }}</strong></a><br>
+            <span class="badge badge-{{ issue.category }}">{{ issue.get_category_display }}</span>
+            <span class="badge badge-{{ issue.status }}">{{ issue.get_status_display }}</span>
+            {% if issue.is_overdue %}<span class="overdue-flag">OVERDUE</span>{% endif %}
+          </div>
+          <div class="priority-score">{{ issue.priority_score }}</div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No open issues yet. Nice and quiet out there.</p>
+    {% endif %}
+    <a href="{% url 'issue_list' %}" style="display:inline-block;margin-top:1rem;">View all issues →</a>
+  </div>
+
+  <div class="card">
+    <h3>Your Reports</h3>
+    {% if my_issues %}
+      {% for issue in my_issues|slice:":5" %}
+        <div class="issue-row">
+          <div>
+            <a href="{% url 'issue_detail' issue.pk %}">{{ issue.title }}</a><br>
+            <span class="badge badge-{{ issue.status }}">{{ issue.get_status_display }}</span>
+          </div>
+          <div>{{ issue.upvote_count }} 👍</div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>You haven't reported anything yet.</p>
+    {% endif %}
+    <a href="{% url 'report_issue' %}" class="btn" style="display:inline-block;margin-top:1rem;">+ Report an issue</a>
+  </div>
+</div>
+{% endblock %}

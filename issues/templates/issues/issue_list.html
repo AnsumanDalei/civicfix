@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}All Issues — CivicFix{% endblock %}
+{% block content %}
+<h1>All Issues</h1>
+
+<form method="get" class="filters">
+  <select name="category" onchange="this.form.submit()">
+    <option value="">All Categories</option>
+    {% for value, label in categories %}
+      <option value="{{ value }}" {% if selected_category == value %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <select name="status" onchange="this.form.submit()">
+    <option value="">All Statuses</option>
+    <option value="open" {% if selected_status == "open" %}selected{% endif %}>Open</option>
+    <option value="in_progress" {% if selected_status == "in_progress" %}selected{% endif %}>In Progress</option>
+    <option value="escalated" {% if selected_status == "escalated" %}selected{% endif %}>Escalated</option>
+    <option value="resolved" {% if selected_status == "resolved" %}selected{% endif %}>Resolved</option>
+  </select>
+</form>
+
+<div class="card">
+  {% if issues %}
+    {% for issue in issues %}
+      <div class="issue-row">
+        <div>
+          <a href="{% url 'issue_detail' issue.pk %}"><strong>{{ issue.title }}</strong></a><br>
+          <span class="badge badge-{{ issue.category }}">{{ issue.get_category_display }}</span>
+          <span class="badge badge-{{ issue.status }}">{{ issue.get_status_display }}</span>
+          <span class="badge">Tier {{ issue.escalation_tier }}</span>
+          {% if issue.is_overdue %}<span class="overdue-flag">OVERDUE</span>{% endif %}
+          <div class="helptext">{{ issue.address|default:"No address given" }} · reported {{ issue.created_at|timesince }} ago · {{ issue.upvote_count }} upvotes</div>
+        </div>
+        <div class="priority-score">{{ issue.priority_score }}</div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No issues match these filters.</p>
+  {% endif %}
+</div>
+{% endblock %}
