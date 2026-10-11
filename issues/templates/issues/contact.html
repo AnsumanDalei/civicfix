@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Contact — CivicFix{% endblock %}
+{% block topbar_title %}Contact Us{% endblock %}
+{% block content %}
+<h1>Contact Us</h1>
+<div class="card" style="max-width:520px;">
+  <p class="helptext">Have a question, bug report, or suggestion? Send us a message.</p>
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <p>
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {{ field.errors }}
+      </p>
+    {% endfor %}
+    <button type="submit" class="btn"><i class="fa-solid fa-paper-plane"></i> Send Message</button>
+  </form>
+</div>
+{% endblock %}

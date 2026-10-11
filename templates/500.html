@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Server Error — CivicFix{% endblock %}
+{% block topbar_title %}Server Error{% endblock %}
+{% block content %}
+<div class="error-page">
+  <div class="code">500</div>
+  <h2>Something went wrong on our end</h2>
+  <p>We've logged the error and will look into it. Please try again in a moment.</p>
+  <a href="{% url 'landing' %}" class="btn">Go home</a>
+</div>
+{% endblock %}

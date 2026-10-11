@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}My support requests — CivicFix{% endblock %}
+{% block content %}
+<div class="page-head cf-page-heading"><div><span class="eyebrow">Help center</span><h1>My support requests</h1><p>Private requests are visible only to you and authorized staff.</p></div><a class="btn btn-primary" href="{% url 'support_ticket_create' %}">New request</a></div>
+<div class="card p-3">{% if tickets %}<div class="table-responsive"><table class="table align-middle"><thead><tr><th>Reference</th><th>Subject</th><th>Category</th><th>Status</th><th>Created</th></tr></thead><tbody>{% for ticket in tickets %}<tr><td><a href="{% url 'support_ticket_detail' ticket.pk %}">{{ ticket.reference }}</a></td><td>{{ ticket.subject }}</td><td>{{ ticket.get_category_display }}</td><td><span class="badge text-bg-secondary">{{ ticket.get_status_display }}</span></td><td>{{ ticket.created_at|date:"M j, Y" }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="settings-empty"><p>You have not submitted a support request.</p><a class="btn btn-outline-primary" href="{% url 'support_ticket_create' %}">Contact support</a></div>{% endif %}</div>
+{% endblock %}

@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}New support request — CivicFix{% endblock %}
+{% block content %}
+<div class="page-head cf-page-heading"><div><span class="eyebrow">Help center</span><h1>New support request</h1><p>Include enough detail for our team to understand your question or issue.</p></div></div>
+<form method="post" enctype="multipart/form-data" class="card p-4 support-form">{% csrf_token %}{% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}{% for field in form %}<div class="mb-3"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}{% if field.errors %}<div class="invalid-feedback d-block">{{ field.errors|join:", " }}</div>{% endif %}</div>{% endfor %}<div class="d-flex gap-2"><button class="btn btn-primary" type="submit">Submit request</button><a class="btn btn-outline-secondary" href="{% url 'user_settings' %}">Cancel</a></div></form>
+{% endblock %}

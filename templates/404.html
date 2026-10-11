@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Page Not Found — CivicFix{% endblock %}
+{% block topbar_title %}Page Not Found{% endblock %}
+{% block content %}
+<div class="error-page">
+  <div class="code">404</div>
+  <h2>Page not found</h2>
+  <p>The page you're looking for doesn't exist or may have been moved. Let's get you back on track.</p>
+  <a href="{% url 'landing' %}" class="btn">Go home</a>
+</div>
+{% endblock %}

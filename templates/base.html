@@ -1,0 +1,219 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}CivicFix{% endblock %}</title>
+<link rel="stylesheet" href="{% static 'issues/vendor/bootstrap/5.3.8/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'issues/css/style.css' %}">
+<link rel="stylesheet" href="{% static 'issues/css/civicfix.css' %}?v=20261007">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="{% static 'issues/icons/icon-192.png' %}">
+<meta name="theme-color" content="#103a34">
+</head>
+<body data-theme="{{ user.settings_preferences.theme|default:'system' }}">
+
+<nav class="navbar navbar-expand-lg civic-navbar sticky-top" aria-label="Main navigation">
+  <div class="container-xxl civic-nav-container">
+    <a href="{% url 'landing' %}" class="navbar-brand civic-brand" aria-label="CivicFix home">{% include "partials/seal_mark.html" %}<span>CivicFix</span></a>
+    <button class="navbar-toggler civic-nav-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#civicfix-navbar" aria-controls="civicfix-navbar" aria-expanded="false" aria-label="{% trans 'Toggle navigation' %}"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="civicfix-navbar">
+      <ul class="navbar-nav mx-lg-auto civic-nav-links">
+        <li class="nav-item"><a href="{% url 'landing' %}" class="nav-link {% if request.resolver_match.url_name == 'landing' %}active{% endif %}" {% if request.resolver_match.url_name == 'landing' %}aria-current="page"{% endif %}>{% trans "Home" %}</a></li>
+        <li class="nav-item"><a href="{% url 'issue_list' %}" class="nav-link {% if request.resolver_match.url_name == 'issue_list' %}active{% endif %}" {% if request.resolver_match.url_name == 'issue_list' %}aria-current="page"{% endif %}>{% if user.is_staff %}{% trans "Manage issues" %}{% else %}{% trans "Explore issues" %}{% endif %}</a></li>
+        <li class="nav-item"><a href="{% url 'issue_map' %}" class="nav-link {% if request.resolver_match.url_name == 'issue_map' %}active{% endif %}" {% if request.resolver_match.url_name == 'issue_map' %}aria-current="page"{% endif %}>{% trans "Map" %}</a></li>
+        <li class="nav-item"><a href="{% url 'about' %}" class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}">{% trans "About" %}</a></li>
+        {% if user.is_staff %}<li class="nav-item"><a href="{% url 'staff_operations' %}" class="nav-link {% if request.resolver_match.url_name == 'staff_operations' %}active{% endif %}" {% if request.resolver_match.url_name == 'staff_operations' %}aria-current="page"{% endif %}>{% trans "Operations" %}</a></li>{% endif %}
+      </ul>
+      <div class="d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 civic-nav-actions">
+        <a href="{% url 'report_issue' %}" class="btn btn-primary civic-report-btn">{% include "partials/icon.html" with name="plus-circle" %}<span>{% trans "Report an issue" %}</span></a>
+        {% if user.is_authenticated %}
+        <div class="dropdown civic-dropdown">
+          <button class="btn civic-icon-button position-relative" id="notif-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="{% trans 'Notifications' %}">{% include "partials/icon.html" with name="bell" %}<span class="civic-unread-dot" id="notif-dot" style="display:none;"></span></button>
+          <div class="dropdown-menu dropdown-menu-end civic-notif-menu" id="notif-panel" aria-labelledby="notif-toggle">
+            <div class="civic-dropdown-heading"><div><strong>{% trans "Notifications" %}</strong><span>{% trans "Updates on reports you follow" %}</span></div><button type="button" id="notif-mark-read" class="btn btn-link btn-sm" style="display:none;">{% trans "Mark all read" %}</button></div>
+            <div id="notif-list"><div class="notif-empty">{% include "partials/icon.html" with name="check-circle" %}<p>{% trans "No new updates. Status changes will appear here." %}</p></div></div>
+            <a class="civic-notif-history" href="{% url 'notification_center' %}">{% trans "View notification history" %}</a>
+          </div>
+        </div>
+        <div class="dropdown civic-dropdown">
+          <button class="btn civic-account-button dropdown-toggle" id="account-menu" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="civic-avatar">{% if user.profile.avatar and user.profile.avatar.name %}<img src="{{ user.profile.avatar.url }}" alt="">{% else %}{{ user.username|slice:":1"|upper }}{% endif %}</span><span class="d-none d-xl-inline">{{ user.get_full_name|default:user.username }}</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end civic-account-menu" aria-labelledby="account-menu">
+            <li><span class="dropdown-header">{{ user.get_full_name|default:user.username }}{% if user.email %}<small>{{ user.email }}</small>{% endif %}</span></li>
+            <li><a class="dropdown-item" href="{% url 'profile' %}">{% trans "Profile" %}</a></li>
+            <li><a class="dropdown-item" href="{% url 'user_settings' %}">{% include "partials/icon.html" with name="gear" %} {% trans "Settings" %}</a></li>
+            <li><a class="dropdown-item" href="{% url 'analytics' %}">{% trans "Transparency" %}</a></li>
+            {% if user.is_staff %}<li><a class="dropdown-item" href="{% url 'support_admin' %}">{% trans "Support management" %}</a></li>{% endif %}
+            {% if user.is_staff %}<li><a class="dropdown-item" href="{% url 'staff_operations' %}">{% trans "Issue operations" %}</a></li><li><a class="dropdown-item" href="{% url 'admin:index' %}">{% trans "Administration" %}</a></li>{% else %}<li><a class="dropdown-item" href="{% url 'profile' %}#reported-issues">{% trans "My reports" %}</a></li>{% endif %}
+            <li><hr class="dropdown-divider"></li>
+            <li><form class="civic-language-form" action="{% url 'set_language' %}" method="post">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><label for="site-language" class="form-label">{% trans "Language" %}</label><select class="form-select form-select-sm" id="site-language" name="language" onchange="this.form.submit()">{% get_current_language as CURRENT_LANGUAGE %}{% get_available_languages as AVAILABLE_LANGUAGES %}{% for code,name in AVAILABLE_LANGUAGES %}<option value="{{ code }}" {% if code == CURRENT_LANGUAGE %}selected{% endif %}>{{ name }}</option>{% endfor %}</select><button type="submit" class="visually-hidden">{% trans "Change language" %}</button></form></li>
+            <li><form action="{% url 'logout' %}" method="post" class="px-2 pt-2">{% csrf_token %}<button type="submit" class="btn btn-outline-secondary btn-sm w-100">{% trans "Log out" %}</button></form></li>
+          </ul>
+        </div>
+        {% else %}
+          <a href="{% url 'login' %}" class="btn btn-link civic-login-link">{% trans "Log in" %}</a>
+          <a href="{% url 'signup' %}" class="btn btn-outline-primary civic-signup-btn">{% trans "Create account" %}</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="container site-main">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} django-message" role="status" aria-live="polite">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+
+{% include "partials/footer.html" %}
+
+<script src="{% static 'issues/vendor/bootstrap/5.3.8/bootstrap.bundle.min.js' %}"></script>
+<script>
+
+// Accessible password visibility control used by the login and signup forms.
+document.querySelectorAll('[data-password-toggle]').forEach(function (button) {
+  button.addEventListener('click', function () {
+    const input = document.getElementById(button.dataset.passwordToggle);
+    if (!input) return;
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    const eyeOpen = button.querySelector('[data-eye-open]');
+    const eyeClosed = button.querySelector('[data-eye-closed]');
+    if (eyeOpen) eyeOpen.hidden = show;
+    if (eyeClosed) eyeClosed.hidden = !show;
+    button.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+    button.setAttribute('aria-pressed', String(show));
+  });
+});
+
+// Keep temporary Django messages readable, then dismiss them without a click.
+document.querySelectorAll('.django-message').forEach(function (message) {
+  window.setTimeout(function () {
+    message.classList.add('message-dismissed');
+    window.setTimeout(function () { message.remove(); }, 400);
+  }, 4500);
+});
+
+// Apply the saved theme; system mode follows the device and honors motion/accessibility preferences.
+(function () {
+  const preference = document.body.dataset.theme || 'system';
+  const dark = preference === 'dark' || (preference === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+})();
+
+// Keep the settings section link in sync with the section currently in view.
+(function () {
+  const links = Array.from(document.querySelectorAll('.settings-nav a[href^="#"]'));
+  if (!links.length || !('IntersectionObserver' in window)) return;
+  const sections = links.map((link) => document.querySelector(link.getAttribute('href'))).filter(Boolean);
+  const observer = new IntersectionObserver((entries) => {
+    const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    if (!visible) return;
+    links.forEach((link) => {
+      const active = link.hash === '#' + visible.target.id;
+      link.classList.toggle('active', active);
+      if (active) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+  }, { rootMargin: '-15% 0px -65% 0px', threshold: [0, .2, .5] });
+  sections.forEach((section) => observer.observe(section));
+})();
+
+{% if user.is_authenticated %}
+// Notifications — polling. Checks every 20s; also right away on page load.
+(function () {
+  const dot = document.getElementById('notif-dot');
+  const list = document.getElementById('notif-list');
+  const markReadBtn = document.getElementById('notif-mark-read');
+  if (!list) return;
+
+  function render(data) {
+    if (dot) dot.style.display = data.unread_count > 0 ? 'block' : 'none';
+    if (markReadBtn) markReadBtn.style.display = data.unread_count > 0 ? 'block' : 'none';
+
+    if (!data.notifications || data.notifications.length === 0) {
+      list.innerHTML = '<div class="notif-empty"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="7.8,12.3 10.6,15.2 16.3,8.8"/></svg><p>No new updates. You\'ll see status changes on your reports here.</p></div>';
+      return;
+    }
+
+    list.replaceChildren();
+    data.notifications.forEach(function (n) {
+      const link = document.createElement('a');
+      link.href = n.issue_id ? ('/issues/' + encodeURIComponent(n.issue_id) + '/') : '#';
+      link.className = 'dd-item';
+      link.style.cssText = 'align-items:flex-start;white-space:normal;';
+      const dotEl = document.createElement('span');
+      dotEl.style.cssText = 'width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:6px;' + (n.is_read ? '' : 'background:var(--seal);');
+      const content = document.createElement('span');
+      const message = document.createElement('span');
+      message.style.cssText = 'display:block;color:var(--ink);';
+      message.textContent = n.message;
+      const date = document.createElement('span');
+      date.className = 'helptext';
+      date.style.fontSize = '.72rem';
+      date.textContent = n.created_at;
+      content.append(message, date);
+      link.append(dotEl, content);
+      list.appendChild(link);
+    });
+  }
+
+  function poll() {
+    fetch("{% url 'notifications_api' %}", { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) { if (data) render(data); })
+      .catch(function () { /* offline or server hiccup — just skip this round */ });
+  }
+
+  if (markReadBtn) {
+    markReadBtn.addEventListener('click', function () {
+      fetch("{% url 'notifications_mark_read' %}", {
+        method: 'POST',
+        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+      }).then(poll);
+    });
+  }
+
+  poll();
+  setInterval(poll, 20000);
+})();
+{% endif %}
+
+// Navbar scroll shadow
+(function () {
+  const nav = document.querySelector('.navbar');
+  if (!nav) return;
+  function onScroll() {
+    nav.classList.toggle('scrolled', window.scrollY > 12);
+  }
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+})();
+
+// Button ripple (purely visual, never blocks the click/submit itself)
+document.addEventListener('click', function (e) {
+  const btn = e.target.closest('.btn, .btn-accent, .btn-outline');
+  if (!btn) return;
+  const rect = btn.getBoundingClientRect();
+  const ripple = document.createElement('span');
+  const size = Math.max(rect.width, rect.height);
+  ripple.className = 'ripple';
+  ripple.style.width = ripple.style.height = size + 'px';
+  ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+  ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+  btn.appendChild(ripple);
+  setTimeout(function () { ripple.remove(); }, 600);
+});
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

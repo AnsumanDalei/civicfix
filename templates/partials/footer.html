@@ -1,0 +1,34 @@
+{% load i18n %}
+<footer class="site-footer">
+  <div class="container-xxl px-3 px-lg-4 py-5">
+    <div class="row g-4 g-lg-5">
+      <div class="col-12 col-lg-5">
+        <a href="{% url 'landing' %}" class="footer-brand">{% include "partials/seal_mark.html" %}<span>CivicFix</span></a>
+        <p class="footer-intro">{% trans "A shared place to report local problems, support neighbors, and follow public-service progress." %}</p>
+        <p class="footer-emergency"><strong>{% trans "In an emergency" %}</strong> {% trans "CivicFix is not an emergency service. Contact your local emergency number." %}</p>
+      </div>
+      <div class="col-6 col-lg-3">
+        <h2>{% trans "Explore CivicFix" %}</h2>
+        <a href="{% url 'issue_list' %}">{% trans "Browse issues" %}</a>
+        <a href="{% url 'issue_map' %}">{% trans "Community map" %}</a>
+        <a href="{% url 'analytics' %}">{% trans "Public transparency" %}</a>
+        <a href="{% url 'about' %}">{% trans "About CivicFix" %}</a>
+      </div>
+      <div class="col-6 col-lg-4">
+        <h2>{% trans "Information" %}</h2>
+        <a href="{% url 'faq' %}">{% trans "Help and FAQs" %}</a>
+        <a href="{% url 'contact' %}">{% trans "Contact" %}</a>
+        <a href="{% url 'privacy' %}">{% trans "Privacy policy" %}</a>
+        <a href="{% url 'terms' %}">{% trans "Terms and conditions" %}</a>
+      </div>
+    </div>
+    <div class="footer-bottom d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mt-4 pt-3">
+      <span>&copy; {% now "Y" %} CivicFix · {% trans "Built for more responsive neighborhoods" %}</span>
+      <form class="language-switch language-switch-footer d-flex align-items-center gap-2" action="{% url 'set_language' %}" method="post">
+        {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><label for="footer-language">{% trans "Language" %}</label>
+        <select class="form-select form-select-sm" id="footer-language" name="language" onchange="this.form.submit()">{% get_current_language as CURRENT_LANGUAGE %}{% get_available_languages as AVAILABLE_LANGUAGES %}{% for code,name in AVAILABLE_LANGUAGES %}<option value="{{ code }}" {% if code == CURRENT_LANGUAGE %}selected{% endif %}>{{ name }}</option>{% endfor %}</select>
+        <button type="submit" class="visually-hidden">{% trans "Change language" %}</button>
+      </form>
+    </div>
+  </div>
+</footer>

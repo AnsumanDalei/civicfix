@@ -1,0 +1,446 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8\nLanguage: hi\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Language"
+msgstr "भाषा"
+msgid "Change language"
+msgstr "भाषा बदलें"
+msgid "Home"
+msgstr "होम"
+msgid "Map"
+msgstr "मानचित्र"
+msgid "Analytics"
+msgstr "विश्लेषण"
+msgid "Report Issue"
+msgstr "समस्या दर्ज करें"
+msgid "All Issues"
+msgstr "सभी समस्याएँ"
+msgid "My Reports"
+msgstr "मेरी रिपोर्टें"
+msgid "Profile"
+msgstr "प्रोफ़ाइल"
+msgid "View notification history"
+msgstr "सूचनाओं का इतिहास देखें"
+msgid "Report an issue"
+msgstr "समस्या दर्ज करें"
+msgid "Explore reports"
+msgstr "रिपोर्ट देखें"
+msgid "Explore issues"
+msgstr "समस्याएँ देखें"
+msgid "Search reports"
+msgstr "रिपोर्ट खोजें"
+msgid "Category"
+msgstr "श्रेणी"
+msgid "Status"
+msgstr "स्थिति"
+msgid "Priority"
+msgstr "प्राथमिकता"
+msgid "Department"
+msgstr "विभाग"
+msgid "From"
+msgstr "से"
+msgid "To"
+msgstr "तक"
+msgid "Sort by"
+msgstr "क्रमबद्ध करें"
+msgid "Apply filters"
+msgstr "फ़िल्टर लागू करें"
+msgid "No matching reports"
+msgstr "कोई मिलती-जुलती रिपोर्ट नहीं"
+msgid "Report a Civic Issue"
+msgstr "नागरिक समस्या दर्ज करें"
+msgid "Search an address or landmark"
+msgstr "पता या पहचान-स्थल खोजें"
+msgid "Find location"
+msgstr "स्थान खोजें"
+msgid "Selected address"
+msgstr "चुना गया पता"
+msgid "Use my current location"
+msgstr "मेरा वर्तमान स्थान उपयोग करें"
+msgid "Add photos"
+msgstr "फ़ोटो जोड़ें"
+msgid "Suggest clearer wording"
+msgstr "बेहतर विवरण सुझाएँ"
+msgid "Use suggestion"
+msgstr "सुझाव उपयोग करें"
+msgid "Top priority right now"
+msgstr "अभी की सबसे ज़रूरी समस्याएँ"
+msgid "Issues you follow"
+msgstr "जिन समस्याओं को आप फ़ॉलो करते हैं"
+msgid "Reports you support"
+msgstr "जिन रिपोर्टों का आप समर्थन करते हैं"
+msgid "Recent activity"
+msgstr "हाल की गतिविधि"
+msgid "Notifications"
+msgstr "सूचनाएँ"
+msgid "Area alerts"
+msgstr "क्षेत्रीय सूचनाएँ"
+msgid "Create an alert"
+msgstr "सूचना बनाएँ"
+msgid "Save area alert"
+msgstr "क्षेत्रीय सूचना सहेजें"
+msgid "Report hotspots"
+msgstr "समस्या-बहुल क्षेत्र"
+msgid "Welcome back to CivicFix"
+msgstr "CivicFix में आपका फिर से स्वागत है"
+msgid "Join CivicFix today"
+msgstr "आज ही CivicFix से जुड़ें"
+
+msgid "About"
+msgstr "परिचय"
+
+msgid "About CivicFix"
+msgstr "CivicFix के बारे में"
+
+msgid "Active work"
+msgstr "जारी काम"
+
+msgid "All categories"
+msgstr "सभी श्रेणियाँ"
+
+msgid "All departments"
+msgstr "सभी विभाग"
+
+msgid "All reports"
+msgstr "सभी रिपोर्ट"
+
+msgid "All statuses"
+msgstr "सभी स्थितियाँ"
+
+msgid "Any priority"
+msgstr "कोई भी प्राथमिकता"
+
+msgid "Authority workspace"
+msgstr "प्राधिकरण कार्यक्षेत्र"
+
+msgid "Awaiting action"
+msgstr "कार्रवाई की प्रतीक्षा में"
+
+msgid "Being addressed"
+msgstr "काम जारी है"
+
+msgid "Browse issues"
+msgstr "समस्याएँ देखें"
+
+msgid "Case"
+msgstr "मामला"
+
+msgid "Clear all filters"
+msgstr "सभी फ़िल्टर हटाएँ"
+
+msgid "Community activity"
+msgstr "समुदाय की गतिविधि"
+
+msgid "Community contribution"
+msgstr "समुदाय में योगदान"
+
+msgid "Community map"
+msgstr "समुदाय का मानचित्र"
+
+msgid "Community reports"
+msgstr "समुदाय की रिपोर्टें"
+
+msgid "Completed cases"
+msgstr "पूरे किए गए मामले"
+
+msgid "Contact"
+msgstr "संपर्क"
+
+msgid "Create account"
+msgstr "खाता बनाएँ"
+
+msgid "Download report"
+msgstr "रिपोर्ट डाउनलोड करें"
+
+msgid "Download service activity"
+msgstr "सेवा गतिविधि डाउनलोड करें"
+
+msgid "Due"
+msgstr "अंतिम समय"
+
+msgid "Edit profile"
+msgstr "प्रोफ़ाइल संपादित करें"
+
+msgid "Emergency?"
+msgstr "आपातकाल?"
+
+msgid "Escalated"
+msgstr "उच्च स्तर पर भेजा गया"
+
+msgid "Explore CivicFix"
+msgstr "CivicFix देखें"
+
+msgid "Export case report"
+msgstr "मामले की रिपोर्ट निर्यात करें"
+
+msgid "Filters are active"
+msgstr "फ़िल्टर लागू हैं"
+
+msgid "Find an existing report, add your support, and follow the updates."
+msgstr "पहले से दर्ज रिपोर्ट खोजें, समर्थन दें और अपडेट देखते रहें।"
+
+msgid "Following"
+msgstr "फ़ॉलो किए गए"
+
+msgid "Help and FAQs"
+msgstr "सहायता और आम सवाल"
+
+msgid "Highest priority"
+msgstr "सबसे अधिक प्राथमिकता"
+
+msgid "In an emergency"
+msgstr "आपात स्थिति में"
+
+msgid "In progress"
+msgstr "काम जारी"
+
+msgid "Information"
+msgstr "जानकारी"
+
+msgid "Issue pages"
+msgstr "समस्या पृष्ठ"
+
+msgid "Issue progress"
+msgstr "समस्या की प्रगति"
+
+msgid "Local reports, open to everyone"
+msgstr "स्थानीय रिपोर्टें, सभी के लिए उपलब्ध"
+
+msgid "Location"
+msgstr "स्थान"
+
+msgid "Log in"
+msgstr "लॉग इन करें"
+
+msgid "Log out"
+msgstr "लॉग आउट करें"
+
+msgid "Manage issues"
+msgstr "समस्याएँ प्रबंधित करें"
+
+msgid "Manage departments"
+msgstr "विभाग प्रबंधित करें"
+
+msgid "Mark all read"
+msgstr "सभी को पढ़ा हुआ चिह्नित करें"
+
+msgid "Marked complete"
+msgstr "पूरा चिह्नित"
+
+msgid "Most supported"
+msgstr "सबसे अधिक समर्थन"
+
+
+msgid "My reports"
+msgstr "मेरी रिपोर्टें"
+
+msgid "Needs a department"
+msgstr "विभाग तय करना है"
+
+msgid "New and open"
+msgstr "नई और खुली रिपोर्टें"
+
+msgid "New reports will appear here as they arrive."
+msgstr "नई रिपोर्टें आते ही यहाँ दिखाई देंगी।"
+
+msgid "Next"
+msgstr "आगे"
+
+msgid "Next cases to review"
+msgstr "समीक्षा के लिए अगले मामले"
+
+msgid "No active cases"
+msgstr "कोई सक्रिय मामला नहीं"
+
+msgid "No new updates. Status changes will appear here."
+msgstr "अभी कोई नया अपडेट नहीं है। स्थिति बदलने पर यहाँ दिखेगा।"
+
+msgid "Notice a problem nearby?"
+msgstr "पास में कोई समस्या दिखी?"
+
+msgid "Oldest first"
+msgstr "सबसे पुरानी पहले"
+
+msgid "Open"
+msgstr "खुली"
+
+msgid "Open case queue"
+msgstr "मामलों की कतार खोलें"
+
+msgid "Operations"
+msgstr "कार्रवाई"
+
+
+msgid "Operations overview"
+msgstr "कार्रवाई का सारांश"
+
+msgid "Overdue"
+msgstr "समय सीमा पार"
+
+msgid "Past service target"
+msgstr "सेवा लक्ष्य की समय सीमा पार"
+
+msgid "Previous"
+msgstr "पिछला"
+
+msgid "Privacy policy"
+msgstr "गोपनीयता नीति"
+
+msgid "Public issue map"
+msgstr "सार्वजनिक समस्याओं का मानचित्र"
+
+msgid "Public transparency"
+msgstr "सार्वजनिक पारदर्शिता"
+
+msgid "Raised for review"
+msgstr "समीक्षा के लिए भेजा गया"
+
+msgid "Recently reported"
+msgstr "हाल में दर्ज"
+
+msgid "Recognized for helping your neighborhood"
+msgstr "अपने मोहल्ले की मदद के लिए सम्मानित"
+
+msgid "Reopened"
+msgstr "फिर से खोली गई"
+
+msgid "Reports filed by you"
+msgstr "आपकी दर्ज की गई रिपोर्टें"
+
+msgid "Resolved"
+msgstr "समाधान किया गया"
+
+msgid "Returned for review"
+msgstr "समीक्षा के लिए वापस भेजा गया"
+
+msgid "Review reports by location"
+msgstr "स्थान के अनुसार रिपोर्टें देखें"
+
+msgid "Review the live service queue and act on the cases that need attention."
+msgstr "लाइव सेवा कतार देखें और ध्यान माँगने वाले मामलों पर कार्रवाई करें।"
+
+msgid "SLA not set"
+msgstr "सेवा समय सीमा तय नहीं"
+
+msgid "Service queue"
+msgstr "सेवा कतार"
+
+msgid "Service queue totals"
+msgstr "सेवा कतार का सार"
+
+msgid "Start a report"
+msgstr "रिपोर्ट शुरू करें"
+
+msgid "Subscribed updates"
+msgstr "अपडेट की सदस्यता"
+
+msgid "Supported"
+msgstr "समर्थित"
+
+msgid "Terms and conditions"
+msgstr "नियम और शर्तें"
+
+msgid "Title, details, issue ID, or location"
+msgstr "शीर्षक, विवरण, समस्या आईडी या स्थान"
+
+msgid "Toggle navigation"
+msgstr "नेविगेशन खोलें या बंद करें"
+
+msgid "Transparency"
+msgstr "पारदर्शिता"
+
+msgid "Transparency data"
+msgstr "पारदर्शिता डेटा"
+
+msgid "Try adjusting a filter, or be the first to report this issue in your area."
+msgstr "फ़िल्टर बदलकर देखें या अपने क्षेत्र में इस समस्या की पहली रिपोर्ट दर्ज करें।"
+
+msgid "Unassigned"
+msgstr "असाइन नहीं किया गया"
+
+msgid "Updates on reports you follow"
+msgstr "आपके फ़ॉलो किए गए मामलों के अपडेट"
+
+msgid "Verified contributions"
+msgstr "सत्यापित योगदान"
+
+msgid "Verified participation will appear here."
+msgstr "सत्यापित योगदान यहाँ दिखाई देगा।"
+
+msgid "Verified reports and helpful updates"
+msgstr "सत्यापित रिपोर्टें और उपयोगी अपडेट"
+
+msgid "View all"
+msgstr "सभी देखें"
+
+msgid "View map"
+msgstr "मानचित्र देखें"
+
+msgid "Your account"
+msgstr "आपका खाता"
+
+msgid "Your active reports"
+msgstr "आपकी सक्रिय रिपोर्टें"
+
+msgid "Your neighborhood account"
+msgstr "आपके मोहल्ले का खाता"
+
+msgid "Your neighborhood, moving forward"
+msgstr "आपका मोहल्ला, बेहतर दिशा में"
+
+msgid "Your participation"
+msgstr "आपकी भागीदारी"
+
+msgid "Your profile"
+msgstr "आपकी प्रोफ़ाइल"
+
+msgid "Your voice matters"
+msgstr "आपकी आवाज़ मायने रखती है"
+
+msgid "reports"
+msgstr "रिपोर्टें"
+
+msgid "support"
+msgstr "समर्थन"
+
+msgid "verified"
+msgstr "सत्यापित"
+
+msgid "Public Hazard (live wire, gas leak, open manhole)"
+msgstr "सार्वजनिक खतरा (खुला तार, गैस रिसाव, खुला मैनहोल)"
+
+msgid "Sanitation (garbage, drainage, sewage)"
+msgstr "स्वच्छता (कचरा, जल निकासी, सीवेज)"
+
+msgid "Infrastructure (pothole, streetlight, road damage)"
+msgstr "बुनियादी ढाँचा (गड्ढा, स्ट्रीट लाइट, सड़क क्षति)"
+
+msgid "Other"
+msgstr "अन्य"
+
+msgid "In Progress"
+msgstr "काम जारी"
+
+msgid "Low"
+msgstr "कम"
+
+msgid "Normal"
+msgstr "सामान्य"
+
+msgid "High"
+msgstr "उच्च"
+
+msgid "Critical"
+msgstr "गंभीर"
+
+msgid "Title"
+msgstr "शीर्षक"
+
+msgid "Description"
+msgstr "विवरण"
+
+msgid "Age / SLA"
+msgstr "समय / सेवा लक्ष्य"
+
+msgid "report"
+msgstr "रिपोर्ट"

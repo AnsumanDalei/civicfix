@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}{{ issue.title }} — CivicFix{% endblock %}
+{% block topbar_title %}Issue details{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<div class="detail-page container-fluid px-0"><a class="back-link btn btn-link px-0" href="{% url 'issue_list' %}">← Back to community reports</a>
+
+<div class="card cf-panel issue-detail-card" style="margin-top:1rem;">
+  <span class="case-id">CF-{{ issue.pk|stringformat:"06d" }}</span>
+  <span class="priority-chip priority-{{ issue.priority }}">{{ issue.get_priority_display }} priority</span>
+  <div class="section-heading d-flex flex-wrap align-items-start justify-content-between gap-3" style="margin-top:.3rem;">
+    <h1 class="mb-2">{{ issue.title }}</h1>
+  </div>
+
+  <p>
+    <span class="tag tag-{{ issue.category }}">{{ issue.get_category_display }}</span>
+    <span class="stamp stamp-{{ issue.status }}">{{ issue.get_status_display }}</span>
+    {% if issue.department %}<span class="tag">{{ issue.department }}</span>{% endif %}
+  </p>
+
+  <p>{{ issue.description }}</p>
+
+  <p class="helptext border rounded-3 bg-light p-3">
+    <i class="fa-solid fa-location-dot"></i> {{ issue.address|default:"Coordinates only" }} ({{ issue.latitude|floatformat:5 }}, {{ issue.longitude|floatformat:5 }})<br>
+    <i class="fa-solid fa-user"></i> Reported on {{ issue.created_at|date:"d M Y, H:i" }}<br>
+  </p>
+
+  {% if issue.photo %}
+    <div class="issue-gallery"><img src="{{ issue.photo.url }}" alt="Photo of {{ issue.title }}" style="max-width:100%;border-radius:12px;margin:1rem 0;box-shadow:var(--shadow-sm);">
+    {% for photo in gallery_photos %}<img src="{{ photo.image.url }}" alt="Additional photo of {{ issue.title }}" loading="lazy">{% endfor %}</div>
+  {% endif %}
+  {% if not issue.photo %}{% for photo in gallery_photos %}<img class="issue-gallery-photo" src="{{ photo.image.url }}" alt="Photo of {{ issue.title }}" loading="lazy">{% endfor %}{% endif %}
+
+  <h3 style="margin-top:1.2rem;font-size:1rem;">{% include "partials/icon.html" with name="location-pin" %} Location</h3>
+  <div id="issue-map" style="width:100%;height:260px;border-radius:12px;border:1px solid var(--border);margin-bottom:1rem;"></div>
+
+  <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    {% if user.is_authenticated %}
+      <form action="{% url 'upvote_issue' issue.pk %}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="upvote-btn">
+          <i class="fa-solid fa-thumbs-up"></i> {{ issue.upvote_count }} Support{{ issue.upvote_count|pluralize }}
+          {% if user in issue.upvoted_by.all %}(remove my support){% endif %}
+        </button>
+      </form>
+    {% else %}
+      <a class="upvote-btn" href="{% url 'login' %}?next={% url 'issue_detail' issue.pk %}">{{ issue.upvote_count }} community supports · Sign in to support</a>
+    {% endif %}
+    {% if user.is_authenticated %}<form action="{% url 'follow_issue' issue.pk %}" method="post">{% csrf_token %}<button class="btn btn-outline" type="submit">{% if is_following %}Following · Unfollow{% else %}♧ Follow updates{% endif %}</button></form>{% else %}<a class="btn btn-outline" href="{% url 'login' %}?next={% url 'issue_detail' issue.pk %}">Sign in to follow</a>{% endif %}
+      <button class="btn btn-outline-primary" type="button" id="share-issue">↗ Share report</button>
+    <div class="share-links" aria-label="Share this public report"><a target="_blank" rel="noopener noreferrer" href="https://wa.me/?text={{ request.build_absolute_uri|urlencode }}">WhatsApp</a><a target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}">Facebook</a><a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri|urlencode }}">LinkedIn</a></div>
+
+    {% if issue.reported_by == user or user.is_staff %}
+      <a href="{% url 'issue_edit' issue.pk %}" class="btn btn-outline"><i class="fa-solid fa-pen"></i> Edit</a>
+      <a href="{% url 'issue_delete' issue.pk %}" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Delete</a>
+    {% endif %}
+
+    {% if user.is_staff and issue.status != "resolved" %}
+      <form action="{% url 'mark_resolved' issue.pk %}" method="post">
+        {% csrf_token %}
+        <label class="helptext" for="resolution-note">Resolution note</label>
+        <input id="resolution-note" name="resolution_note" maxlength="255" placeholder="What work was completed?" required>
+        <button type="submit" class="btn"><i class="fa-solid fa-circle-check"></i> Mark Resolved</button>
+      </form>
+    {% endif %}
+    {% if issue.status == "resolved" %}
+      {% if issue.reported_by_id == user.id or user.is_staff %}
+        <form action="{% url 'reopen_issue' issue.pk %}" method="post">
+          {% csrf_token %}
+          <label class="helptext" for="reopen-reason">Still needs attention?</label>
+          <input id="reopen-reason" name="reason" maxlength="200" placeholder="Tell the authority what remains" required>
+          <button type="submit" class="btn btn-outline"><i class="fa-solid fa-rotate-left"></i> Reopen issue</button>
+        </form>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <section class="community-updates" aria-labelledby="updates-heading"><div class="section-heading"><div><span class="eyebrow">Neighbors &amp; authority updates</span><h2 id="updates-heading">Community updates <span class="update-count">{{ comments|length }}</span></h2></div></div>
+    {% if user.is_authenticated %}<form action="{% url 'add_issue_comment' issue.pk %}" method="post" class="update-form">{% csrf_token %}<label for="community-update">Share a useful update</label><textarea id="community-update" name="body" rows="3" maxlength="1000" placeholder="Is it still happening? Has work started? Add a helpful detail…" required></textarea><div><small>Be respectful. Updates are visible to the public and can be hidden by moderators.</small><button class="btn btn-accent" type="submit">Post update</button></div></form>{% else %}<p><a href="{% url 'login' %}?next={% url 'issue_detail' issue.pk %}">Sign in</a> to add an update.</p>{% endif %}
+    {% for comment in comments %}<article class="community-update"><div class="update-avatar" aria-hidden="true">{{ comment.user.username|slice:":1"|upper }}</div><div><div class="update-byline"><strong>{% if comment.user.is_staff %}Authority team{% else %}Community member{% endif %}</strong><time datetime="{{ comment.created_at|date:'c' }}">{{ comment.created_at|date:"d M Y, H:i" }}</time>{% if comment.is_helpful %}<span class="confirmed-badge">Helpful update</span>{% endif %}</div><p>{{ comment.body|linebreaksbr }}</p>{% if user.is_staff %}<form method="post" action="{% url 'mark_comment_helpful' issue.pk comment.pk %}">{% csrf_token %}{% if not comment.is_helpful %}<button type="submit" class="text-link">Mark helpful</button>{% endif %}</form><form method="post" action="{% url 'hide_issue_comment' issue.pk comment.pk %}">{% csrf_token %}<button type="submit" class="text-link">Hide update</button></form>{% endif %}</div></article>{% empty %}<p class="muted-copy">No community updates yet. Follow this report to hear when it changes.</p>{% endfor %}
+  </section>
+
+  {% if user.is_staff %}
+    <div class="card cf-panel mt-4">
+      {% if issue.status != "resolved" %}
+        <h3 style="font-size:1rem;">Update case progress</h3>
+        <form action="{% url 'update_issue_priority' issue.pk %}" method="post" class="staff-priority-form">{% csrf_token %}<label for="issue-priority">Priority</label><select id="issue-priority" name="priority">{% for value,label in priority_choices %}<option value="{{ value }}" {% if issue.priority == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><label for="priority-note">Reason (required)</label><input id="priority-note" name="priority_note" maxlength="255" placeholder="Why does this need this priority?" required><button type="submit" class="btn btn-outline">Update priority</button></form>
+        <form action="{% url 'update_issue_status' issue.pk %}" method="post" style="display:flex;gap:.6rem;align-items:end;flex-wrap:wrap;margin-bottom:1rem;">
+          {% csrf_token %}
+          <div>
+            <label for="case-status">Status</label>
+            <select id="case-status" name="status" required>
+              <option value="open" {% if issue.status == "open" %}selected{% endif %}>Open</option>
+              <option value="in_progress" {% if issue.status == "in_progress" %}selected{% endif %}>In progress</option>
+            </select>
+          </div>
+          <div style="flex:1;min-width:220px;">
+            <label for="status-note">Progress note</label>
+            <input id="status-note" name="status_note" maxlength="255" placeholder="What is happening with this case?" required>
+          </div>
+          <button type="submit" class="btn btn-outline">Post update</button>
+        </form>
+      {% endif %}
+      <h3 style="font-size:1rem;">Assign to department (staff only)</h3>
+      <form action="{% url 'assign_department' issue.pk %}" method="post" style="display:flex;gap:0.6rem;align-items:center;flex-wrap:wrap;">
+        {% csrf_token %}
+        {{ assign_form.department }}
+        <button type="submit" class="btn">Assign</button>
+      </form>
+    </div>
+  {% endif %}
+
+  {% if issue.history.all %}
+    <h3 style="margin-top:1.5rem;">Timeline</h3>
+    {% for entry in history %}
+      <div class="timeline-item">
+        <div class="timeline-event">{{ entry.get_event_display }}{% if entry.note %} — {{ entry.note }}{% endif %}</div>
+        <div class="timeline-meta">{% if entry.actor %}{{ entry.actor.username }} &middot; {% endif %}{{ entry.created_at|date:"d M Y, H:i" }}</div>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  
+</div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(function () {
+    const mapEl = document.getElementById("issue-map");
+    if (!mapEl || typeof L === "undefined") return;
+
+    const lat = Number("{{ issue.latitude|default:'0' }}");
+    const lng = Number("{{ issue.longitude|default:'0' }}");
+
+    const map = L.map("issue-map", {
+        scrollWheelZoom: false
+    }).setView([lat, lng], 16);
+
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+        maxZoom: 19
+    }).addTo(map);
+
+    L.marker([lat, lng])
+        .addTo(map)
+        .bindPopup("{{ issue.title|escapejs }}");
+})();
+</script>
+
+<script>
+(function(){const btn=document.getElementById('share-issue');if(!btn)return;btn.addEventListener('click',async function(){const data={title:document.title,url:window.location.href};try{if(navigator.share)await navigator.share(data);else{await navigator.clipboard.writeText(data.url);btn.textContent='Link copied';setTimeout(()=>btn.textContent='↗ Share report',1800)}}catch(e){if(e.name!=='AbortError')window.prompt('Copy this report link',data.url)}})})();
+
+</script>
+{% endblock %}

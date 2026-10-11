@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static i18n %}
+{% block title %}CivicFix — Better neighborhoods start with being heard{% endblock %}
+{% block content %}
+<main class="home-modern">
+  <section class="home-hero row g-0">
+    <div class="hero-copy col-12 col-lg-6">
+      <span class="eyebrow"><span class="eyebrow-dot"></span> {% trans "Your neighborhood, moving forward" %}</span>
+      <h1>Report it.<br><em>Track it.</em><br>See change.</h1>
+      <p>One clear place to report local problems, find what’s already been raised, and follow progress from your community and city team.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary btn-large" href="{% url 'report_issue' %}">{% trans "Report an issue" %} <span aria-hidden="true">↗</span></a>
+        <a class="btn btn-outline-primary btn-large" href="{% url 'issue_list' %}">{% trans "Explore reports" %}</a>
+      </div>
+      <p class="emergency-note"><strong>{% trans "Emergency?" %}</strong> {% trans "CivicFix is not an emergency response service. Call your local emergency number." %}</p>
+    </div>
+    <div class="hero-art col-12 col-lg-6" aria-label="Live community issue map preview">
+      <div class="map-window"><div class="map-top"><span class="live-pulse"></span> Community pulse <a href="{% url 'issue_map' %}">Open map ↗</a></div><div class="home-map" id="home-map" role="img" aria-label="Map of recently reported public issues"></div>
+        <div class="map-key"><span><i class="map-dot dot-open"></i> Open</span><span><i class="map-dot dot-progress"></i> In progress</span><span><i class="map-dot dot-resolved"></i> Resolved</span></div></div>
+      <div class="hero-note-card"><span class="hero-note-icon">◎</span><span><strong>Every report has a place.</strong><small>See nearby concerns and add your support.</small></span></div>
+    </div>
+  </section>
+  <section class="metric-strip" aria-label="CivicFix community statistics">
+    <div><strong>{{ stats.total }}</strong><span>Reports shared</span></div><div><strong>{{ stats.open }}</strong><span>Need attention</span></div><div><strong>{{ stats.in_progress }}</strong><span>Being worked on</span></div><div><strong>{{ stats.resolved }}</strong><span>Resolved</span></div><div><strong>{{ stats.resolution_rate }}%</strong><span>Resolution rate</span></div>
+  </section>
+  <section class="home-section">
+    <div class="section-intro"><div><span class="eyebrow">A simple path to progress</span><h2>From “someone should”<br>to “it’s taken care of.”</h2></div><p>Clear reports help the right people understand the issue and keep neighbors informed along the way.</p></div>
+    <div class="process-grid row g-3"><article class="col-12 col-md-4"><span>01</span><div class="process-icon">⌖</div><h3>Report</h3><p>Pin the place, describe what’s happening, and add a photo if it helps.</p></article><article class="col-12 col-md-4"><span>02</span><div class="process-icon">◉</div><h3>Find together</h3><p>Check nearby reports and support an existing one when it describes the same problem.</p></article><article class="col-12 col-md-4"><span>03</span><div class="process-icon">↗</div><h3>Follow progress</h3><p>Get updates as the case is assigned, work begins, and the issue is resolved.</p></article></div>
+  </section>
+  <section class="home-section recent-section"><div class="section-intro"><div><span class="eyebrow">Community reports</span><h2>What’s happening nearby</h2></div><a class="text-link" href="{% url 'issue_list' %}">See all reports ↗</a></div>
+    {% if recent_issues %}<div class="recent-grid row g-3">{% for issue in recent_issues %}<article class="recent-card col-12 col-md-6 col-xl-4"><a class="recent-image" href="{% url 'issue_detail' issue.pk %}">{% if issue.photo %}<img src="{{ issue.photo.url }}" alt="Photo for {{ issue.title }}" loading="lazy">{% else %}<span class="category-mark mark-{{ issue.category }}">{% if issue.category == 'hazard' %}⚠{% elif issue.category == 'sanitation' %}♻{% elif issue.category == 'infrastructure' %}⌂{% else %}◎{% endif %}</span>{% endif %}<span class="stamp stamp-{{ issue.status }}">{{ issue.get_status_display }}</span></a><div class="recent-body"><span class="case-id">CF-{{ issue.pk|stringformat:"06d" }} · {{ issue.get_category_display|truncatewords:2 }}</span><h3><a href="{% url 'issue_detail' issue.pk %}">{{ issue.title }}</a></h3><p>{{ issue.address|default:"Location pinned on map"|truncatechars:76 }}</p><div class="recent-meta"><span>{{ issue.created_at|timesince }} ago</span><span>♡ {{ issue.supports }} support{{ issue.supports|pluralize }}</span></div></div></article>{% endfor %}</div>{% else %}<div class="empty-state"><h3>Your community’s first report starts here.</h3><p>Share a local issue so neighbors and the responsible team can see it.</p><a href="{% url 'signup' %}" class="btn btn-accent">Make the first report</a></div>{% endif %}
+  </section>
+  <section class="category-section"><div class="section-intro"><div><span class="eyebrow">Browse by topic</span><h2>Find a place to start</h2></div><p>Look for a similar report by the kind of issue you’re seeing.</p></div><div class="category-links row g-3"><a class="col-12 col-sm-6 col-xl-3" href="{% url 'issue_list' %}?category=infrastructure"><span>⌂</span> Roads &amp; infrastructure <b>↗</b></a><a class="col-12 col-sm-6 col-xl-3" href="{% url 'issue_list' %}?category=sanitation"><span>♻</span> Sanitation &amp; drainage <b>↗</b></a><a class="col-12 col-sm-6 col-xl-3" href="{% url 'issue_list' %}?category=hazard"><span>⚠</span> Public hazards <b>↗</b></a><a class="col-12 col-sm-6 col-xl-3" href="{% url 'issue_list' %}?category=other"><span>◎</span> Other concerns <b>↗</b></a></div></section>
+  <section class="home-cta"><div><span class="eyebrow">Small actions add up</span><h2>Help make your neighborhood work better.</h2><p>Report a problem or find a neighbor who already has.</p></div><a href="{% if user.is_authenticated %}{% url 'report_issue' %}{% else %}{% url 'signup' %}{% endif %}" class="btn btn-light btn-large">Get started <span aria-hidden="true">↗</span></a></section>
+</main>
+{{ map_points|json_script:"home-map-data" }}
+{% endblock %}
+{% block extra_js %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+<script>
+window.addEventListener('load',function(){const root=document.getElementById('home-map');if(!root||!window.L)return;const points=JSON.parse(document.getElementById('home-map-data').textContent);const center=points.length?[points[0].latitude,points[0].longitude]:[20.2961,85.8245];const map=L.map(root,{zoomControl:false,scrollWheelZoom:false,dragging:false,touchZoom:false}).setView(center,11);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap'}).addTo(map);points.forEach(p=>{const color=p.status==='resolved'?'#6b7a72':p.status==='in_progress'?'#d69b42':'#167d73';L.circleMarker([p.latitude,p.longitude],{radius:6,color:'#fff',weight:2,fillColor:color,fillOpacity:.95}).addTo(map).bindPopup('<a href="/issues/'+p.id+'/">'+String(p.title).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))+'</a>')})});
+</script>
+{% endblock %}

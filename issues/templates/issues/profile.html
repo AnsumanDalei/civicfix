@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block title %}My Profile — CivicFix{% endblock %}
+{% block topbar_title %}My Profile{% endblock %}
+{% block content %}
+
+<div class="profile-page">
+
+  <div class="profile-hero">
+    {% include "partials/seal_mark.html" with cls="seal-watermark" %}
+  </div>
+
+  <div class="profile-header-card">
+    <div class="profile-left">
+      <div class="profile-avatar">
+        {% if user.profile.avatar and user.profile.avatar.name %}
+          <img src="{{ user.profile.avatar.url }}" alt="Profile">
+        {% else %}
+          <div class="avatar-placeholder">{{ user.username|slice:":1"|upper }}</div>
+        {% endif %}
+      </div>
+      <div class="profile-info">
+        <h2>
+          {{ user.get_full_name|default:user.username }}
+          {% if user.profile.email_verified %}{% include "partials/icon.html" with name="check-circle" %}{% endif %}
+        </h2>
+        <p>{% include "partials/icon.html" with name="envelope" %} {{ user.email }}</p>
+        {% if user.profile.phone %}<p>{% include "partials/icon.html" with name="phone" %} {{ user.profile.phone }}</p>{% endif %}
+        <p>{% include "partials/icon.html" with name="calendar" %} Joined {{ user.date_joined|date:"M Y" }}</p>
+        {% if user.profile.email_verified %}
+          <span class="verify-badge verify-yes">{% include "partials/icon.html" with name="check" %} Verified</span>
+        {% else %}
+          <span class="verify-badge verify-no">{% include "partials/icon.html" with name="warning" %} Email not verified</span>
+          <form method="post" action="{% url 'resend_verification' %}" style="display:inline;margin-left:.5rem;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline btn-sm">Resend email</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+    <div class="profile-right">
+      <button type="button" class="btn" onclick="openProfileModal()">{% include "partials/icon.html" with name="pencil" %} Edit Profile</button>
+    </div>
+  </div>
+
+  <div class="profile-stats">
+    <div class="profile-stat-card">
+      <div class="stat-icon total">{% include "partials/icon.html" with name="file-lines" %}</div>
+      <div class="stat-details"><span>Total Reports</span><h3>{{ my_issues|length }}</h3><small>All time</small></div>
+    </div>
+    <div class="profile-stat-card">
+      <div class="stat-icon open">{% include "partials/icon.html" with name="warning" %}</div>
+      <div class="stat-details"><span>Open Issues</span><h3>{{ open_count }}</h3><small>Needs attention</small></div>
+    </div>
+    <div class="profile-stat-card">
+      <div class="stat-icon resolved">{% include "partials/icon.html" with name="check-circle" %}</div>
+      <div class="stat-details"><span>Resolved</span><h3>{{ resolved_count }}</h3><small>Successfully resolved</small></div>
+    </div>
+    <div class="profile-stat-card">
+      <div class="stat-icon progress">{% include "partials/icon.html" with name="clock" %}</div>
+      <div class="stat-details"><span>In Progress</span><h3>{{ in_progress_count }}</h3><small>Currently working</small></div>
+    </div>
+  </div>
+
+  <div class="profile-content">
+
+    <!-- Left column: reported issues -->
+    <div class="card" id="reported-issues">
+      <div class="section-heading">
+        <h3 style="margin:0;">Your Reported Issues</h3>
+        <a href="{% url 'issue_list' %}" class="view-all">View all &rarr;</a>
+      </div>
+
+      {% if my_issues %}
+        {% for issue in my_issues %}
+          <div class="report-row">
+            {% if issue.photo %}
+              <img src="{{ issue.photo.url }}" class="issue-thumb" alt="">
+            {% else %}
+              <div class="issue-icon-thumb" style="background:
+                {% if issue.category == 'hazard' %}var(--danger)
+                {% elif issue.category == 'sanitation' %}var(--stamp)
+                {% elif issue.category == 'infrastructure' %}#1D4ED8
+                {% else %}#5B6B78{% endif %};">
+                {% include "partials/icon.html" with name="location-pin" %}
+              </div>
+            {% endif %}
+            <div class="report-main">
+              <span class="case-id">CF-{{ issue.pk|stringformat:"06d" }}</span><br>
+              <a href="{% url 'issue_detail' issue.pk %}">{{ issue.title }}</a>
+              <div class="report-meta">
+                <span class="stamp stamp-{{ issue.status }}">{{ issue.get_status_display }}</span>
+                <span>{% include "partials/icon.html" with name="location-pin" %} {{ issue.address|default:"No address"|truncatechars:28 }}</span>
+                <span>&middot; {{ issue.created_at|timesince }} ago</span>
+                <span>&middot; {% include "partials/icon.html" with name="thumbs-up" %} {{ issue.upvote_count }}</span>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>You haven't reported anything yet. <a href="{% url 'report_issue' %}">Report your first issue &rarr;</a></p>
+      {% endif %}
+    </div>
+
+    <!-- Right column -->
+    <div>
+      <div class="card">
+        <h3>Profile Overview</h3>
+        <div class="overview-row">
+          {% include "partials/icon.html" with name="envelope" %}
+          <div><div class="ov-label">Email</div><div class="ov-value">{{ user.email }}</div></div>
+        </div>
+        {% if user.profile.phone %}
+        <div class="overview-row">
+          {% include "partials/icon.html" with name="phone" %}
+          <div><div class="ov-label">Phone</div><div class="ov-value">{{ user.profile.phone }}</div></div>
+        </div>
+        {% endif %}
+        <div class="overview-row">
+          {% include "partials/icon.html" with name="calendar" %}
+          <div><div class="ov-label">Joined</div><div class="ov-value">{{ user.date_joined|date:"d M Y" }}</div></div>
+        </div>
+        <div class="social-row">
+          <a href="https://github.com/AnsumanDalei" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+          <a href="https://www.linkedin.com/in/ansuman-dalei-dev/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          <a href="mailto:{{ user.email }}" title="Email">{% include "partials/icon.html" with name="envelope" %}</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Quick Actions</h3>
+        <div class="quick-actions">
+          <a href="{% url 'report_issue' %}" class="qa-btn">{% include "partials/icon.html" with name="plus-circle" %} Report New Issue</a>
+          <a href="{% url 'issue_list' %}" class="qa-btn">{% include "partials/icon.html" with name="list-check" %} All Issues</a>
+          <a href="{% url 'password_change' %}" class="qa-btn">{% include "partials/icon.html" with name="lock" %} Change Password</a>
+          <a href="{% url 'faq' %}" class="qa-btn">{% include "partials/icon.html" with name="question-circle" %} Help &amp; Support</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <div class="row g-3 profile-community-lists">
+    <section class="col-12 col-lg-6" aria-labelledby="supported-issues-heading">
+      <div class="card h-100"><div class="section-heading"><h3 id="supported-issues-heading">Issues you support</h3><a class="view-all" href="{% url 'issue_list' %}">Explore issues &rarr;</a></div>
+        {% for issue in supported_issues %}<div class="report-row"><div class="report-main"><a href="{% url 'issue_detail' issue.pk %}">{{ issue.title }}</a><div class="report-meta"><span class="stamp stamp-{{ issue.status }}">{{ issue.get_status_display }}</span><span>{{ issue.get_category_display }}</span><span>{{ issue.address|default:"Map location"|truncatechars:36 }}</span></div></div></div>{% empty %}<p class="text-secondary mb-0">You haven't supported a report yet. <a href="{% url 'issue_list' %}">Explore community issues</a>.</p>{% endfor %}
+      </div>
+    </section>
+    <section class="col-12 col-lg-6" aria-labelledby="followed-issues-heading">
+      <div class="card h-100"><div class="section-heading"><h3 id="followed-issues-heading">Issues you follow</h3><a class="view-all" href="{% url 'notification_center' %}">Notifications &rarr;</a></div>
+        {% for issue in following_issues %}<div class="report-row"><div class="report-main"><a href="{% url 'issue_detail' issue.pk %}">{{ issue.title }}</a><div class="report-meta"><span class="stamp stamp-{{ issue.status }}">{{ issue.get_status_display }}</span><span>{{ issue.get_category_display }}</span><span>{{ issue.address|default:"Map location"|truncatechars:36 }}</span></div></div></div>{% empty %}<p class="text-secondary mb-0">You aren't following a report yet. Follow an issue to keep up with changes.</p>{% endfor %}
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="profile-modal" id="editModal">
+  <div class="profile-modal-content">
+    <div class="modal-header">
+      <h2>Edit Profile</h2>
+      <span class="close-modal" onclick="closeProfileModal()">&times;</span>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <label>Full Name</label>
+      {{ form.full_name }}
+      {{ form.full_name.errors }}
+
+      <label>Email Address</label>
+      {{ form.email }}
+      {{ form.email.errors }}
+
+      {% if user.profile.avatar and user.profile.avatar.name %}
+      <div class="current-photo">
+        <img src="{{ user.profile.avatar.url }}" alt="Profile">
+      </div>
+      <button type="submit" name="remove_avatar" value="1" class="btn btn-danger btn-sm">Remove Photo</button>
+      <br><br>
+      {% endif %}
+
+      <label>Upload New Photo</label>
+      <input type="file" name="avatar" class="form-control">
+      {{ form.avatar.errors }}
+
+      <label>Phone Number</label>
+      {{ form.phone }}
+      {{ form.phone.errors }}
+
+      <button type="submit" class="btn" style="margin-top:.6rem;">Save Changes</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openProfileModal() { document.getElementById("editModal").style.display = "flex"; }
+  function closeProfileModal() { document.getElementById("editModal").style.display = "none"; }
+  window.onclick = function (e) {
+    let modal = document.getElementById("editModal");
+    if (e.target == modal) { modal.style.display = "none"; }
+  };
+</script>
+{% if show_edit_modal %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.getElementById("editModal").style.display = "flex";
+  });
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Public issue analytics" %} — CivicFix{% endblock %}
+{% block content %}
+<header class="cf-page-heading mt-4"><span class="eyebrow">{% trans "Public service data" %}</span><h1>{% trans "Public issue analytics" %}</h1><p>{% trans "A simple summary of reports submitted to CivicFix." %}</p></header>
+<div class="row g-3 mb-4">
+<div class="col-6 col-lg-3"><div class="profile-stat-card h-100"><div class="stat-details"><span>{% trans "Total reports" %}</span><h3>{{ total }}</h3></div></div></div>
+<div class="col-6 col-lg-3"><div class="profile-stat-card h-100"><div class="stat-details"><span>{% trans "Open" %}</span><h3>{{ open }}</h3></div></div></div>
+<div class="col-6 col-lg-3"><div class="profile-stat-card h-100"><div class="stat-details"><span>{% trans "In progress" %}</span><h3>{{ in_progress }}</h3></div></div></div>
+<div class="col-6 col-lg-3"><div class="profile-stat-card h-100"><div class="stat-details"><span>{% trans "Resolved" %}</span><h3>{{ resolved }}</h3><small>{{ resolution_rate }}% {% trans "resolution rate" %}</small></div></div></div>
+</div>
+<div class="row g-3"><div class="col-12 col-lg-6"><section class="cf-panel h-100"><h2 class="h4">{% trans "Reports by category" %}</h2>{% for row in by_category %}<div class="issue-row"><span>{{ row.category|title }}</span><strong>{{ row.total }}</strong></div>{% empty %}<p class="text-secondary">{% trans "No reports yet." %}</p>{% endfor %}</section></div>
+<div class="col-12 col-lg-6"><section class="cf-panel h-100"><h2 class="h4">{% trans "Reports by department" %}</h2>{% for row in by_department %}<div class="issue-row"><span>{{ row.department__name }}</span><strong>{{ row.total }}</strong></div>{% empty %}<p class="text-secondary">{% trans "No department assignments yet." %}</p>{% endfor %}</section></div></div>
+{% endblock %}

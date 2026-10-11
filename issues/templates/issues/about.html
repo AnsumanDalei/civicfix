@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}About — CivicFix{% endblock %}
+{% block topbar_title %}About CivicFix{% endblock %}
+{% block content %}
+<h1>About CivicFix</h1>
+<div class="card" style="max-width:850px; margin:auto; line-height:1.8;">
+    <h2>Overview</h2>
+    <p>
+        <strong>CivicFix</strong> is a digital platform designed to simplify the process
+        of reporting and managing civic issues. It provides citizens with an easy way
+        to report public infrastructure problems while helping authorities organize,
+        monitor, and resolve complaints more efficiently.
+    </p>
+    <p>
+        Whether it's a pothole, garbage accumulation, broken streetlight,
+        water leakage, or any other public concern, CivicFix provides a
+        centralized platform to keep the reporting process simple,
+        transparent, and accessible.
+    </p>
+    <hr>
+    <h2>Our Mission</h2>
+    <p>
+        Our mission is to improve communication between citizens and local
+        authorities by providing a reliable platform that encourages community
+        participation and promotes faster resolution of civic issues.
+    </p>
+    <hr>
+    <h2>What You Can Do</h2>
+    <ul>
+        <li>Report civic issues with descriptions and supporting images.</li>
+        <li>Track the progress of submitted complaints.</li>
+        <li>Search and filter reported issues.</li>
+        <li>Manage your own reports and profile securely.</li>
+        <li>Review public issue statistics on the analytics page.</li>
+    </ul>
+    <hr>
+    <h2>Why Choose CivicFix</h2>
+    <ul>
+        <li>Simple and user-friendly interface.</li>
+        <li>Transparent complaint tracking.</li>
+        <li>Organized issue management.</li>
+        <li>Secure user accounts and data management.</li>
+        <li>Responsive design for desktop, tablet, and mobile devices.</li>
+    </ul>
+    <hr>
+    <h2>Our Vision</h2>
+    <p>
+        We believe technology can strengthen the connection between citizens
+        and public authorities. Our vision is to create cleaner, safer, and
+        better-managed communities by making civic issue reporting more
+        efficient and accessible for everyone.
+    </p>
+    <hr>
+    <h2>Need Assistance?</h2>
+    <p>
+        If you have any questions, suggestions, or feedback about CivicFix,
+        please visit our
+        <a href="{% url 'contact' %}"><strong>Contact Page</strong></a>.
+        We appreciate your feedback and are always working to improve the platform.
+    </p>
+</div>
+{% endblock %}

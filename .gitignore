@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+
+# Local settings and uploads
+.env
+media/*
+!media/.gitkeep
+private_support/
+staticfiles/
+
+# Virtual environments
+.venv/
+venv/
+
+# Editor/OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log

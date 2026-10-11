@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}Settings — CivicFix{% endblock %}
+{% block content %}
+<div class="settings-page">
+  <header class="page-head cf-page-heading"><div><span class="eyebrow">Your account</span><h1>Settings</h1><p>Manage your CivicFix profile, preferences, notifications and privacy.</p></div></header>
+  <div class="row g-4">
+    <aside class="col-12 col-lg-3"><nav class="settings-nav card p-3" aria-label="Settings sections"><a class="active" href="#profile-settings">Profile</a><a href="#preferences">Preferences</a><a href="#notification-settings">Notifications</a><a href="#watch-areas">Watch areas</a><a href="#privacy-settings">Privacy &amp; data</a><a href="#help-settings">Help &amp; support</a><a href="#security-settings">Security</a></nav></aside>
+    <div class="col-12 col-lg-9 settings-content">
+      <section class="card p-4 mb-4" id="profile-settings"><div class="settings-section-heading"><div><h2>Profile</h2><p>Update your name, email, phone and profile photo.</p></div><a class="btn btn-outline-primary" href="{% url 'profile' %}">Edit profile</a></div>
+        <dl class="settings-summary"><div><dt>Name</dt><dd>{{ user.get_full_name|default:"Not set" }}</dd></div><div><dt>Username</dt><dd>{{ user.username }}</dd></div><div><dt>Email</dt><dd>{{ user.email }} {% if profile.email_verified %}<span class="badge text-bg-success">Verified</span>{% else %}<span class="badge text-bg-secondary">Not verified</span>{% endif %}</dd></div><div><dt>Phone</dt><dd>{{ profile.phone|default:"Not set" }}</dd></div></dl>
+      </section>
+
+      <section class="card p-4 mb-4" id="preferences"><h2>Account preferences</h2><p class="text-secondary">Choose defaults for your CivicFix experience. These will not change locations in reports you submit.</p>
+        <form method="post" class="settings-form">{% csrf_token %}
+          <div class="row g-3">{% for field in form %}{% if field.name != "in_app_notifications" and field.name != "email_notifications" and field.name != "issue_updates" and field.name != "area_alerts" %}<div class="col-12 col-md-6"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.errors %}<div class="invalid-feedback d-block">{{ field.errors|join:", " }}</div>{% endif %}</div>{% endif %}{% endfor %}</div>
+          <hr class="my-4"><h3 id="notification-settings">Notifications</h3><p class="text-secondary">Email notifications require valid SMTP configuration. In-app notices are shown in CivicFix.</p>
+          <div class="settings-checks">{% for field in form %}{% if field.name == "in_app_notifications" or field.name == "email_notifications" or field.name == "issue_updates" or field.name == "area_alerts" %}<label class="settings-check"><span><strong>{{ field.label }}</strong><small>{% if field.name == "in_app_notifications" %}Show supported issue and support updates in CivicFix.{% elif field.name == "email_notifications" %}Receive issue updates by email when delivery is configured.{% elif field.name == "issue_updates" %}Receive updates about reports you submitted or follow.{% else %}Receive in-app alerts for new reports matching watched areas.{% endif %}</small></span>{{ field }}</label>{% endif %}{% endfor %}</div>
+          <button class="btn btn-primary mt-4" type="submit">Save settings</button>
+        </form>
+      </section>
+
+      <section class="card p-4 mb-4" id="watch-areas"><div class="settings-section-heading"><div><h2>Watch areas</h2><p>Save localities and optional categories for new issue alerts. Matching uses the report's address text.</p></div></div>
+        <form method="post" action="{% url 'watch_area_add' %}" class="row g-2 align-items-end mb-3">{% csrf_token %}<div class="col-12 col-md-6"><label class="form-label" for="{{ watch_form.locality.id_for_label }}">Locality</label>{{ watch_form.locality }}</div><div class="col-12 col-md-4"><label class="form-label" for="{{ watch_form.category.id_for_label }}">Category</label>{{ watch_form.category }}</div><div class="col-12 col-md-2"><button class="btn btn-outline-primary w-100" type="submit">Add area</button></div></form>
+        {% if watch_areas %}<ul class="settings-list">{% for area in watch_areas %}<li><span><strong>{{ area.locality }}</strong><small>{{ area.get_category_display|default:"All categories" }}</small></span><form method="post" action="{% url 'watch_area_remove' area.pk %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary" type="submit" aria-label="Remove {{ area.locality }}">Remove</button></form></li>{% endfor %}</ul>{% else %}<p class="settings-empty">No areas saved yet.</p>{% endif %}
+      </section>
+
+      <section class="card p-4 mb-4" id="privacy-settings"><h2>Privacy and data</h2><p>Your email and phone are visible only to you and authorized CivicFix staff. Issue locations and report photos may be visible with public reports. We do not publish a public user profile.</p><div class="d-flex flex-wrap gap-2"><a class="btn btn-outline-primary" href="{% url 'privacy' %}">Privacy information</a><a class="btn btn-outline-secondary" href="{% url 'user_data_export' %}">Download my data (JSON)</a></div><hr><h3>Request account deletion</h3><p class="text-secondary">Requests are reviewed by staff. Your reports are retained for civic record continuity; approval records the request but does not automatically delete reports or account data.</p>
+        {% if deletion_request %}<p class="alert alert-info mb-0">Your request is {{ deletion_request.get_status_display|lower }} (submitted {{ deletion_request.created_at|date:"M j, Y" }}).</p>{% else %}<form method="post" action="{% url 'account_deletion_request' %}" class="row g-2 align-items-end">{% csrf_token %}<div class="col-12 col-md-5"><label class="form-label" for="delete-password">Confirm your password</label><input class="form-control" id="delete-password" name="password" type="password" autocomplete="current-password" required></div><div class="col-12 col-md-4"><label class="form-check mt-3"><input class="form-check-input" type="checkbox" name="confirm_deletion" value="yes" required><span class="form-check-label">I request account deletion review</span></label></div><div class="col-12 col-md-3"><button class="btn btn-outline-danger" type="submit">Submit request</button></div></form>{% endif %}
+      </section>
+
+      <section class="card p-4 mb-4" id="security-settings"><h2>Password and security</h2><p>Change your password using Django's current-password validation, or use the secure reset flow if you cannot sign in. Two-factor authentication is not available in this version.</p><a class="btn btn-outline-primary" href="{% url 'password_change' %}">Change password</a> <a class="btn btn-link" href="{% url 'password_reset' %}">Forgot password?</a></section>
+
+      <section class="card p-4" id="help-settings"><div class="settings-section-heading"><div><h2>Help and support</h2><p>Contact support, report a technical problem, share feedback, or request a feature.</p></div><a class="btn btn-primary" href="{% url 'support_ticket_create' %}">New support request</a></div><div class="d-flex gap-3 mb-3"><a href="{% url 'faq' %}">FAQs</a><a href="{% url 'contact' %}">Contact</a><a href="{% url 'about' %}">About CivicFix</a><a href="{% url 'terms' %}">Terms</a></div>
+        {% if tickets %}<ul class="settings-list">{% for ticket in tickets %}<li><span><strong><a href="{% url 'support_ticket_detail' ticket.pk %}">{{ ticket.reference }} · {{ ticket.subject }}</a></strong><small>{{ ticket.get_status_display }} · {{ ticket.created_at|date:"M j, Y" }}</small></span></li>{% endfor %}</ul><a href="{% url 'support_ticket_list' %}">View all requests</a>{% else %}<p class="settings-empty">No support requests yet.</p>{% endif %}
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}

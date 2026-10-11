@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Community issue map — CivicFix{% endblock %}
+{% block content %}
+<div class="map-page">
+<header class="page-head cf-page-heading row g-3 align-items-end"><div class="col-12 col-lg"><span class="eyebrow">Explore your area</span><h1>Community issue map</h1><p>Browse public reports and open a marker to see the full case.</p></div><div class="col-12 col-lg-auto"><a class="btn btn-primary" href="{% url 'report_issue' %}">＋ Report an issue</a></div></header>
+<div class="map-filters civic-map-filters card row g-3 align-items-end">
+<label class="col-12 col-sm-6 col-lg-4 col-xl-2">Category<select class="form-select" id="map-category"><option value="">All categories</option>{% for value,label in categories %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></label>
+<label class="col-12 col-sm-6 col-lg-4 col-xl-2">Status<select class="form-select" id="map-status"><option value="">All statuses</option>{% for value,label in statuses %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></label>
+<label class="col-12 col-sm-6 col-lg-4 col-xl-2">Priority<select class="form-select" id="map-priority"><option value="">Any priority</option>{% for value,label in priorities %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select></label>
+<label class="col-12 col-sm-6 col-lg-4 col-xl-2">Search<input class="form-control" id="map-search" type="search" placeholder="Title or location"></label>
+<label class="col-6 col-sm-6 col-lg-4 col-xl-2">From<input class="form-control" id="map-from" type="date"></label>
+<label class="col-6 col-sm-6 col-lg-4 col-xl-2">To<input class="form-control" id="map-to" type="date"></label>
+<span class="col-12" id="map-count" aria-live="polite"></span></div>
+<div id="public-map" class="public-map" aria-label="Public issue map" role="application"></div><p class="map-attribution">Map data © OpenStreetMap contributors. Marker visibility is limited to the 1,000 most recent reports.</p>
+<noscript><p>Turn on JavaScript to use the interactive map. <a href="{% url 'issue_list' %}">Browse reports in a list</a>.</p></noscript></div>
+{{ map_points|json_script:"map-data" }}
+{% endblock %}
+{% block extra_js %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+<script>
+window.addEventListener("load", function () {
+  if (!window.L) return;
+  const reports = JSON.parse(document.getElementById("map-data").textContent);
+  const map = L.map("public-map").setView(reports.length ? [reports[0].latitude, reports[0].longitude] : [20.2961, 85.8245], reports.length ? 11 : 5);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom: 19, attribution: "&copy; OpenStreetMap contributors"}).addTo(map);
+  const markers = L.layerGroup().addTo(map);
+  const escapeHtml = (value) => String(value || "").replace(/[&<>"']/g, (char) => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", "\"":"&quot;", "'":"&#39;"}[char]));
+  function showReports() {
+    markers.clearLayers();
+    const category = document.getElementById("map-category").value;
+    const status = document.getElementById("map-status").value;
+    const priority = document.getElementById("map-priority").value;
+    const query = document.getElementById("map-search").value.trim().toLowerCase();
+    const from = document.getElementById("map-from").value;
+    const to = document.getElementById("map-to").value;
+    const visible = reports.filter((report) => (!category || report.category === category) && (!status || report.status === status) && (!priority || report.priority === priority) && (!query || `${report.title} ${report.address} ${report.category} ${report.id}`.toLowerCase().includes(query)) && (!from || report.created_at >= from) && (!to || report.created_at <= to));
+    visible.forEach((report) => {
+      const color = report.priority === "high" ? "#b42318" : report.priority === "medium" ? "#c17a12" : "#137a70";
+      L.circleMarker([report.latitude, report.longitude], {radius: 8, color: "#fff", weight: 2, fillColor: color, fillOpacity: .95})
+        .bindPopup(`<strong>${escapeHtml(report.title)}</strong><br>${escapeHtml(report.category)} · ${escapeHtml(report.status)} · ${escapeHtml(report.priority)}<br><a href="/issues/${report.id}/">View report</a>`)
+        .addTo(markers);
+    });
+    document.getElementById("map-count").textContent = `${visible.length} report${visible.length === 1 ? "" : "s"} shown`;
+  }
+  ["map-category", "map-status", "map-priority", "map-from", "map-to"].forEach((id) => document.getElementById(id).addEventListener("change", showReports));
+  document.getElementById("map-search").addEventListener("input", showReports);
+  if (reports.length > 1) map.fitBounds(reports.map((report) => [report.latitude, report.longitude]), {padding: [25, 25], maxZoom: 13});
+  showReports();
+});
+</script>
+{% endblock %}

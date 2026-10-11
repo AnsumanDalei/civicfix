@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Create account" %} — CivicFix{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-shell">
+    <aside class="auth-side" aria-label="About CivicFix">
+      {% include "partials/seal_mark.html" with cls="seal-watermark" %}
+      <div class="auth-side-inner">
+        {% include "partials/seal_mark.html" %}
+        <h2>{% trans "Join CivicFix" %}</h2>
+        <p>Create an account to report a local problem and follow it as your community and local teams respond.</p>
+        <ul>
+          <li><i class="fa-solid fa-check" aria-hidden="true"></i> Add a location and useful details</li>
+          <li><i class="fa-solid fa-check" aria-hidden="true"></i> Share photos when they help</li>
+          <li><i class="fa-solid fa-check" aria-hidden="true"></i> Follow reports and community updates</li>
+        </ul>
+      </div>
+    </aside>
+
+    <section class="auth-form-side" aria-labelledby="signup-heading">
+      <span class="auth-eyebrow">CivicFix account</span>
+      <h1 id="signup-heading">{% trans "Create your account" %}</h1>
+      <p class="auth-subtitle">It only takes a minute to get started.</p>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="alert alert-danger" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+        {% for field in form %}
+          <div class="mb-3 auth-field">
+            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+            {% if field.name == "password1" or field.name == "password2" %}
+              <div class="password-field">{{ field }}<button class="password-visibility-toggle" type="button" data-password-toggle="{{ field.id_for_label }}" aria-label="Show password" aria-pressed="false"><svg data-eye-open viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg><svg data-eye-closed viewBox="0 0 24 24" aria-hidden="true" hidden><path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"/><path d="M9.9 5.2A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.1 3.8M6.2 6.3C3.5 8.1 2 12 2 12s3.6 7 10 7a10 10 0 0 0 3-.5"/></svg></button></div>
+            {% else %}{{ field }}{% endif %}
+            {% if field.help_text %}<div class="form-text">{{ field.help_text|safe }}</div>{% endif %}
+            {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary w-100 auth-submit">{% trans "Create account" %}</button>
+      </form>
+      <p class="auth-switch">{% trans "Already have an account?" %} <a href="{% url 'login' %}">{% trans "Sign in" %}</a></p>
+    </section>
+  </div>
+</div>
+{% endblock %}
