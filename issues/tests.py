@@ -826,53 +826,43 @@ class AIAssistantEndpointTests(TestCase):
         self.assertContains(response, "AI Assist")
         self.assertContains(response, reverse("ai_assist"))
 
-    def test_missing_key_returns_friendly_message_and_does_not_block_reporting(self):
-        from django.test import override_settings
-        with override_settings(OPENAI_API_KEY=""):
-            response = self.client.post(self.url, data='{"action":"improve","description":"lamp is broken"}', content_type="application/json")
-        self.assertEqual(response.status_code, 503)
-        self.assertIn("continue entering the report manually", response.json()["error"])
 
-    def test_description_is_sent_to_provider_and_suggestion_is_returned(self):
-        from unittest.mock import Mock, patch
-        from django.test import override_settings
-        import json
-        api_response = Mock()
-        api_response.__enter__ = Mock(return_value=api_response)
-        api_response.__exit__ = Mock(return_value=False)
-        api_response.read.return_value = json.dumps({"output": [{"content": [{"type": "output_text", "text": "A streetlight is not working near the crossing."}]}]}).encode()
-        with override_settings(OPENAI_API_KEY="test-key", OPENAI_MODEL="gpt-5-mini"):
-            with patch("issues.ai_assistant.urlopen", return_value=api_response) as opener:
-                response = self.client.post(self.url, data=json.dumps({"action":"improve", "description":"lamp broken near crossing"}), content_type="application/json")
+    def test_local_ai_improves_description(self):
+        response = self.client.post(
+            self.url,
+            data='{"action":"improve","description":"road is very bad"}',
+            content_type="application/json",
+        )
         self.assertEqual(response.status_code, 200)
-        self.assertIn("not working near the crossing", response.json()["result"])
-        request = opener.call_args.args[0]
-        body = json.loads(request.data)
-        self.assertEqual(body["input"], "lamp broken near crossing")
-        self.assertFalse(body["store"])
+        self.assertIn("poor condition", response.json()["result"].lower())
 
-    def test_category_suggestion_must_be_an_existing_category(self):
-        from unittest.mock import Mock, patch
-        from django.test import override_settings
-        import json
-        api_response = Mock()
-        api_response.__enter__ = Mock(return_value=api_response)
-        api_response.__exit__ = Mock(return_value=False)
-        api_response.read.return_value = json.dumps({"output": [{"content": [{"type": "output_text", "text": "sanitation"}]}]}).encode()
-        with override_settings(OPENAI_API_KEY="test-key"):
-            with patch("issues.ai_assistant.urlopen", return_value=api_response):
-                response = self.client.post(self.url, data=json.dumps({"action":"category", "description":"A blocked drain"}), content_type="application/json")
+    def test_local_ai_suggests_existing_category(self):
+        response = self.client.post(
+            self.url,
+            data='{"action":"category","description":"There is garbage on the road"}',
+            content_type="application/json",
+        )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["category"], "sanitation")
 
-    def test_provider_failure_returns_friendly_fallback(self):
-        from unittest.mock import patch
-        from django.test import override_settings
-        with override_settings(OPENAI_API_KEY="test-key"):
-            with patch("issues.ai_assistant.urlopen", side_effect=TimeoutError):
-                response = self.client.post(self.url, data='{"action":"summary","description":"blocked drain"}', content_type="application/json")
-        self.assertEqual(response.status_code, 503)
-        self.assertIn("continue entering the report manually", response.json()["error"])
+    def test_local_ai_returns_summary(self):
+        response = self.client.post(
+            self.url,
+            data='{"action":"summary","description":"A large pothole is on the road. Vehicles are having difficulty passing."}',
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("pothole", response.json()["result"].lower())
+
+    def test_local_ai_works_without_openai_api_key(self):
+        response = self.client.post(
+            self.url,
+            data='{"action":"improve","description":"lamp is broken"}',
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("result", response.json())
+
 
     def test_ai_endpoint_requires_login_and_validates_input(self):
         self.client.logout()

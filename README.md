@@ -21,7 +21,9 @@ CivicFix is a Django civic issue reporting and tracking platform. Residents can 
 
 ## Technology
 
-Python, Django 5.2, Django REST Framework, SQLite, HTML, CSS, Bootstrap 5, JavaScript, Leaflet/OpenStreetMap, Pillow, and python-dotenv. Optional AI Assist calls the OpenAI Responses API using Python's standard HTTP library.
+**## Technology**
+
+Python, Django 5.2, Django REST Framework, SQLite, HTML, CSS, Bootstrap 5, JavaScript, Leaflet/OpenStreetMap, Pillow, and python-dotenv. AI Assist uses local rule-based logic for description improvement, category suggestions, and summaries. No external AI API key is required.
 
 ## Run locally (Windows PowerShell)
 
@@ -52,8 +54,9 @@ CONTACT_RECEIVER_EMAIL=civicfix.team@gmail.com
 ```
 
 ## Optional AI configuration
+**## AI Assist**
 
-Set `OPENAI_API_KEY` in `.env` to enable AI Assist. `OPENAI_MODEL` defaults to `gpt-5-mini`. AI requests send only the report description, set `store: false`, and are optional. Never commit `.env` or an API key.
+AI Assist provides local, rule-based suggestions to improve report wording, suggest an issue category, and generate a short summary. Citizens review suggestions before using them. AI Assist does not submit reports automatically and does not require an external API key or paid AI service.
 
 ## Main URLs
 
