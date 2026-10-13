@@ -41,6 +41,11 @@ jobs:
           DJANGO_SECRET_KEY: ci-test-key
         run: python manage.py migrate
 
+      - name: Collect static files
+        env:
+          DJANGO_SECRET_KEY: ci-test-key
+        run: python manage.py collectstatic --noinput
+
       - name: Run tests
         env:
           DJANGO_SECRET_KEY: ci-test-key
