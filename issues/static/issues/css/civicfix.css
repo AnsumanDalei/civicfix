@@ -248,3 +248,14 @@ html[data-theme="dark"] .support-message { background:#152127; border-color:var(
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
+
+/* Keep the public landing page's light-design headings readable when the
+   visitor's device requests dark mode. Other pages still honor dark theme. */
+html[data-theme="dark"] .home-modern .hero-copy h1 {
+  color: #152c2d;
+}
+html[data-theme="dark"] .home-modern .section-intro h2,
+html[data-theme="dark"] .home-modern .process-grid h3,
+html[data-theme="dark"] .home-modern .empty-state h3 {
+  color: #193231;
+}
