@@ -307,7 +307,7 @@ def contact_view(request):
                 messages.warning(request, "Something went wrong sending your message. Please try again later. Your message was saved for our team.")
             except Exception:
                 logger.exception("Contact form submission %s saved, but email delivery failed", contact_message.pk)
-                messages.warning(request, "Your message was saved successfully, but email delivery is delayed. Our team can still view it.")
+                messages.warning(request, "Something went wrong sending your message. Please try again later. Your message was saved for our team.")
             return redirect("contact")
     else:
         form = ContactForm()
