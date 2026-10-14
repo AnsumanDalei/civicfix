@@ -259,3 +259,44 @@ html[data-theme="dark"] .home-modern .process-grid h3,
 html[data-theme="dark"] .home-modern .empty-state h3 {
   color: #193231;
 }
+
+/* Targeted contrast fixes for pages whose own colors are intentionally light/dark.
+   Keep the rest of the user's selected theme unchanged. */
+html[data-theme="dark"] .home-modern .home-cta h2 {
+  color: #f5faf8;
+}
+html[data-theme="dark"] .home-modern .home-cta p {
+  color: #c6d8d2;
+}
+html[data-theme="dark"] .home-modern .home-cta .eyebrow {
+  color: #a6c5bb;
+}
+html[data-theme="dark"] .home-modern .hero-copy h1,
+html[data-theme="dark"] .home-modern .section-intro h2,
+html[data-theme="dark"] .home-modern .process-grid h3,
+html[data-theme="dark"] .home-modern .empty-state h3 {
+  color: #193231;
+}
+html[data-theme="dark"] .site-main .contact-form-card {
+  background: #fff;
+  border-color: #dce5e1;
+  color: #263d39;
+}
+html[data-theme="dark"] .site-main .contact-form-card h1,
+html[data-theme="dark"] .site-main .contact-form-card h2,
+html[data-theme="dark"] .site-main .contact-form-card h3,
+html[data-theme="dark"] .site-main .contact-form-card label {
+  color: #263d39;
+}
+html[data-theme="dark"] .site-main .contact-form-card .helptext {
+  color: #667872;
+}
+html[data-theme="dark"] .site-main .contact-form-card input,
+html[data-theme="dark"] .site-main .contact-form-card textarea,
+html[data-theme="dark"] .site-main .contact-form-card select,
+html[data-theme="dark"] .site-main .contact-form-card .form-control,
+html[data-theme="dark"] .site-main .contact-form-card .form-select {
+  background: #fff;
+  color: #263d39;
+  border-color: #dce5e1;
+}
