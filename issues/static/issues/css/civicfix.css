@@ -328,3 +328,16 @@ html[data-theme="dark"] .home-modern .process-grid p {
 html[data-theme="dark"] .home-modern .home-cta h2 {
   color: #f5faf8;
 }
+
+
+/* Keep the dark community CTA readable on desktop and mobile. */
+.home-modern .home-cta { color: #f5faf8; }
+.home-modern .home-cta h2 { color: #f5faf8 !important; }
+.home-modern .home-cta p { color: #c6d8d2 !important; }
+.home-modern .home-cta .eyebrow { color: #a6c5bb !important; }
+
+/* Keep dark authentication-panel text readable in every theme. */
+.auth-shell .auth-side,
+.auth-shell .auth-side h2 { color: #ffffff; }
+.auth-shell .auth-side p { color: #d2dfda; }
+.auth-shell .auth-side ul li { color: #e0eae6; }
