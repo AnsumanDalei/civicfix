@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 import re
+from django.contrib.auth.hashers import check_password
 from .models import Issue, Profile, Department, PRIORITY_CHOICES, UserSettings, WatchArea, SupportTicket, SupportReply
 from django.core.exceptions import ValidationError
 
@@ -38,6 +39,19 @@ class SignUpForm(UserCreationForm):
         if User.objects.filter(email__iexact=email).exists():
             raise forms.ValidationError("An account with this email already exists.")
         return email
+
+    def clean_password1(self):
+        password = self.cleaned_data.get("password1")
+        if not password:
+            return password
+
+        # Passwords are stored as hashes, so compare the candidate with each hash.
+        for existing_hash in User.objects.exclude(password="").values_list("password", flat=True).iterator():
+            if check_password(password, existing_hash):
+                raise forms.ValidationError(
+                    "This password is already in use by another account. Please choose a different password."
+                )
+        return password
 
     class Meta:
         model = User
