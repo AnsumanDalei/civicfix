@@ -245,6 +245,7 @@ def contact_view(request):
                         headers={
                             "Authorization": f"Bearer {resend_api_key}",
                             "Content-Type": "application/json",
+                            "User-Agent": "CivicFix/1.0",
                         },
                         method="POST",
                     )
