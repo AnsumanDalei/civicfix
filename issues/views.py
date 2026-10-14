@@ -295,7 +295,7 @@ def contact_view(request):
             except HTTPError as exc:
                 error_body = exc.read().decode("utf-8", errors="replace")
                 logger.error(
-                    "Resend API returned HTTP %s: %s",
+                    "Email provider API returned HTTP %s: %s",
                     exc.code,
                     error_body[:2000],
                 )
