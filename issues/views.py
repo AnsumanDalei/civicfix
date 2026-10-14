@@ -295,7 +295,7 @@ def contact_view(request):
                         connection=None,
                     )
                 logger.info("Contact form submission %s email accepted by provider for %s", contact_message.pk, contact_recipient)
-                messages.success(request, "Thanks — your message has been received. We'll get back to you soon.")
+                messages.success(request, "Thanks — your message has been sent. Your message has also been saved for our team.")
             except HTTPError as exc:
                 error_body = exc.read().decode("utf-8", errors="replace")
                 logger.error(
@@ -304,7 +304,7 @@ def contact_view(request):
                     error_body[:2000],
                 )
                 logger.error("Contact form submission %s saved, but email delivery failed.", contact_message.pk)
-                messages.warning(request, "Your message was saved successfully, but email delivery is delayed. Our team can still view it.")
+                messages.warning(request, "Something went wrong sending your message. Please try again later. Your message was saved for our team.")
             except Exception:
                 logger.exception("Contact form submission %s saved, but email delivery failed", contact_message.pk)
                 messages.warning(request, "Your message was saved successfully, but email delivery is delayed. Our team can still view it.")
