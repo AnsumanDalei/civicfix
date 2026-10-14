@@ -228,15 +228,41 @@ def contact_view(request):
             {message}
             """
             try:
-                send_mail(
-                    f"[CivicFix Contact] {subject}", body, settings.DEFAULT_FROM_EMAIL,
-                    [contact_recipient], fail_silently=False,
-                )
+                resend_api_key = os.environ.get("RESEND_API_KEY", "").strip()
+                if resend_api_key:
+                    payload = json.dumps({
+                        "from": os.environ.get(
+                            "RESEND_FROM_EMAIL", "CivicFix <onboarding@resend.dev>"
+                        ).strip(),
+                        "to": [contact_recipient],
+                        "reply_to": email,
+                        "subject": f"[CivicFix Contact] {subject}",
+                        "text": body,
+                    }).encode("utf-8")
+                    api_request = Request(
+                        "https://api.resend.com/emails",
+                        data=payload,
+                        headers={
+                            "Authorization": f"Bearer {resend_api_key}",
+                            "Content-Type": "application/json",
+                        },
+                        method="POST",
+                    )
+                    with urlopen(api_request, timeout=10) as api_response:
+                        if not 200 <= api_response.status < 300:
+                            raise RuntimeError("Email API returned a non-success response")
+                else:
+                    # SMTP is retained for local/paid hosting, with a timeout to avoid worker hangs.
+                    send_mail(
+                        f"[CivicFix Contact] {subject}", body, settings.DEFAULT_FROM_EMAIL,
+                        [contact_recipient], fail_silently=False,
+                        connection=None,
+                    )
                 logger.info("Contact form submitted by %s", email)
                 messages.success(request, "Thanks — your message has been sent. We'll get back to you soon.")
             except Exception:
                 logger.exception("Failed to send contact form email")
-                messages.error(request, "Something went wrong sending your message. Please try again later.")
+                messages.error(request, "We couldn't send your message right now. Please try again later.")
             return redirect("contact")
     else:
         form = ContactForm()
