@@ -299,10 +299,10 @@ def contact_view(request):
                     exc.code,
                     error_body[:2000],
                 )
-                messages.error(request, "We couldn't send your message right now. Please try again later.")
+                messages.error(request, "Something went wrong sending your message. Please try again later.")
             except Exception:
                 logger.exception("Failed to send contact form email")
-                messages.error(request, "We couldn't send your message right now. Please try again later.")
+                messages.error(request, "Something went wrong sending your message. Please try again later.")
             return redirect("contact")
     else:
         form = ContactForm()
