@@ -242,7 +242,7 @@ def contact_view(request):
                             "name": "CivicFix Team",
                             "email": os.environ.get(
                                 "BREVO_SENDER_EMAIL",
-                                "civicfix.team@gmail.com",
+                                "civicfix.team@12462288.brevosend.com",
                             ).strip(),
                         },
                         "to": [{"email": contact_recipient}],
