@@ -41,7 +41,7 @@ from .forms import (
     SupportTicketForm,
     SupportReplyForm,
 )
-from .models import Issue, CATEGORY_CHOICES, STATUS_CHOICES, PRIORITY_CHOICES, Department, Notification, IssueFollow, IssueComment, IssuePhoto, haversine_meters, UserSettings, WatchArea, SupportTicket, SupportReply, AccountDeletionRequest
+from .models import Issue, CATEGORY_CHOICES, STATUS_CHOICES, PRIORITY_CHOICES, Department, Notification, IssueFollow, IssueComment, IssuePhoto, haversine_meters, UserSettings, WatchArea, SupportTicket, SupportReply, AccountDeletionRequest, ContactMessage
 from .services import route_issue_department
 from .ai_assistant import assist_with_issue
 logger = logging.getLogger("issues")
@@ -209,6 +209,10 @@ def contact_view(request):
             email = form.cleaned_data["email"]
             subject = form.cleaned_data["subject"]
             message = form.cleaned_data["message"]
+            # Save every valid message first, so it is never lost if email delivery fails.
+            contact_message = ContactMessage.objects.create(
+                name=name, email=email, subject=subject, message=message
+            )
             contact_recipient = settings.CONTACT_RECEIVER_EMAIL
             if not contact_recipient:
                 messages.error(request, "The contact inbox is not configured yet. Please try again later.")
@@ -290,8 +294,8 @@ def contact_view(request):
                         [contact_recipient], fail_silently=False,
                         connection=None,
                     )
-                logger.info("Contact form submitted by %s", email)
-                messages.success(request, "Thanks — your message has been sent. We'll get back to you soon.")
+                logger.info("Contact form submission %s email accepted by provider for %s", contact_message.pk, contact_recipient)
+                messages.success(request, "Thanks — your message has been received. We'll get back to you soon.")
             except HTTPError as exc:
                 error_body = exc.read().decode("utf-8", errors="replace")
                 logger.error(
@@ -299,10 +303,11 @@ def contact_view(request):
                     exc.code,
                     error_body[:2000],
                 )
-                messages.error(request, "Something went wrong sending your message. Please try again later.")
+                logger.error("Contact form submission %s saved, but email delivery failed.", contact_message.pk)
+                messages.warning(request, "Your message was saved successfully, but email delivery is delayed. Our team can still view it.")
             except Exception:
-                logger.exception("Failed to send contact form email")
-                messages.error(request, "Something went wrong sending your message. Please try again later.")
+                logger.exception("Contact form submission %s saved, but email delivery failed", contact_message.pk)
+                messages.warning(request, "Your message was saved successfully, but email delivery is delayed. Our team can still view it.")
             return redirect("contact")
     else:
         form = ContactForm()
