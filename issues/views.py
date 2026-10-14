@@ -228,8 +228,39 @@ def contact_view(request):
             {message}
             """
             try:
+                brevo_api_key = os.environ.get("BREVO_API_KEY", "").strip()
                 resend_api_key = os.environ.get("RESEND_API_KEY", "").strip()
-                if resend_api_key:
+
+                if brevo_api_key:
+                    # Brevo HTTPS API works on Render Free, where outbound SMTP is blocked.
+                    payload = json.dumps({
+                        "sender": {
+                            "name": "CivicFix Team",
+                            "email": os.environ.get(
+                                "BREVO_SENDER_EMAIL",
+                                "civicfix.team@gmail.com",
+                            ).strip(),
+                        },
+                        "to": [{"email": contact_recipient}],
+                        "replyTo": {"email": email, "name": name},
+                        "subject": f"[CivicFix Contact] {subject}",
+                        "textContent": body,
+                    }).encode("utf-8")
+                    api_request = Request(
+                        "https://api.brevo.com/v3/smtp/email",
+                        data=payload,
+                        headers={
+                            "api-key": brevo_api_key,
+                            "Content-Type": "application/json",
+                            "Accept": "application/json",
+                            "User-Agent": "CivicFix/1.0",
+                        },
+                        method="POST",
+                    )
+                    with urlopen(api_request, timeout=15) as api_response:
+                        if not 200 <= api_response.status < 300:
+                            raise RuntimeError("Brevo API returned a non-success response")
+                elif resend_api_key:
                     payload = json.dumps({
                         "from": os.environ.get(
                             "RESEND_FROM_EMAIL", "CivicFix <onboarding@resend.dev>"
@@ -251,7 +282,7 @@ def contact_view(request):
                     )
                     with urlopen(api_request, timeout=10) as api_response:
                         if not 200 <= api_response.status < 300:
-                            raise RuntimeError("Email API returned a non-success response")
+                            raise RuntimeError("Resend API returned a non-success response")
                 else:
                     # SMTP is retained for local/paid hosting, with a timeout to avoid worker hangs.
                     send_mail(
