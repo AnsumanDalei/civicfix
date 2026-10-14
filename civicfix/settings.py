@@ -121,6 +121,9 @@ EMAIL_BACKEND = os.environ.get(
     if EMAIL_HOST_PASSWORD
     else "django.core.mail.backends.console.EmailBackend",
 )
+# Prevent SMTP connections from hanging a web worker indefinitely.
+EMAIL_TIMEOUT = int(os.environ.get("EMAIL_TIMEOUT", "10"))
+
 SITE_URL = os.environ.get("SITE_URL", "http://127.0.0.1:8000")
 
 CSRF_TRUSTED_ORIGINS = [
