@@ -372,3 +372,19 @@ class AccountDeletionRequest(models.Model):
     class Meta:
         ordering = ["-created_at"]
 
+
+
+class ContactMessage(models.Model):
+    """Persist public contact-form submissions even when email delivery fails."""
+    name = models.CharField(max_length=120)
+    email = models.EmailField()
+    subject = models.CharField(max_length=150)
+    message = models.TextField(max_length=5000)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.subject} — {self.name} ({self.created_at:%Y-%m-%d})"
