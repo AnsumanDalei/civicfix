@@ -260,6 +260,14 @@ def contact_view(request):
                     )
                 logger.info("Contact form submitted by %s", email)
                 messages.success(request, "Thanks — your message has been sent. We'll get back to you soon.")
+            except HTTPError as exc:
+                error_body = exc.read().decode("utf-8", errors="replace")
+                logger.error(
+                    "Resend API returned HTTP %s: %s",
+                    exc.code,
+                    error_body[:2000],
+                )
+                messages.error(request, "We couldn't send your message right now. Please try again later.")
             except Exception:
                 logger.exception("Failed to send contact form email")
                 messages.error(request, "We couldn't send your message right now. Please try again later.")
