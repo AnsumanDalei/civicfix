@@ -300,3 +300,31 @@ html[data-theme="dark"] .site-main .contact-form-card .form-select {
   color: #263d39;
   border-color: #dce5e1;
 }
+
+/* The public landing page uses a light editorial layout even when the device
+   requests dark mode. Keep section backgrounds and their text in matching pairs. */
+html[data-theme="dark"] .home-modern .home-section {
+  background: #f1f6f3;
+  color: #1b302d;
+}
+html[data-theme="dark"] .home-modern .category-section {
+  background: #fff;
+  color: #1b302d;
+}
+html[data-theme="dark"] .home-modern .section-intro h2 {
+  color: #1b302d;
+}
+html[data-theme="dark"] .home-modern .process-grid article {
+  background: #fff;
+  color: #263d39;
+  border-color: #e1e8e4;
+}
+html[data-theme="dark"] .home-modern .process-grid h3 {
+  color: #193331;
+}
+html[data-theme="dark"] .home-modern .process-grid p {
+  color: #71807c;
+}
+html[data-theme="dark"] .home-modern .home-cta h2 {
+  color: #f5faf8;
+}
