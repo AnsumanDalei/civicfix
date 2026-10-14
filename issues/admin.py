@@ -16,6 +16,7 @@ from .models import (
     SupportTicket,
     SupportReply,
     AccountDeletionRequest,
+    ContactMessage,
 )
 
 
@@ -175,3 +176,11 @@ class AccountDeletionRequestAdmin(admin.ModelAdmin):
     list_display = ("user", "status", "created_at", "reviewed_at", "reviewed_by")
     list_filter = ("status",)
     readonly_fields = ("user", "reason", "created_at")
+
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = ("subject", "name", "email", "is_read", "created_at")
+    list_filter = ("is_read", "created_at")
+    search_fields = ("name", "email", "subject", "message")
+    readonly_fields = ("name", "email", "subject", "message", "created_at")
