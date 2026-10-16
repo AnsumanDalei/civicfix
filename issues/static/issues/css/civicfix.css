@@ -341,3 +341,37 @@ html[data-theme="dark"] .home-modern .home-cta h2 {
 .auth-shell .auth-side h2 { color: #ffffff; }
 .auth-shell .auth-side p { color: #d2dfda; }
 .auth-shell .auth-side ul li { color: #e0eae6; }
+
+
+/* Authentication forms stay readable on mobile regardless of device theme. */
+.auth-shell { background: #ffffff; color: #0b1c2c; }
+.auth-form-side, .auth-form-side h1, .auth-form-side .auth-eyebrow,
+.auth-form-side .form-label, .auth-form-side .auth-switch { color: #0b1c2c; }
+.auth-form-side .auth-subtitle,
+.auth-form-side .auth-links-row .text-secondary { color: #536575 !important; }
+.auth-form-side .form-control,
+.auth-form-side input[type="text"],
+.auth-form-side input[type="email"],
+.auth-form-side input[type="password"] {
+  background: #ffffff !important;
+  color: #0b1c2c !important;
+  -webkit-text-fill-color: #0b1c2c !important;
+  border: 1px solid #d5dee5 !important;
+  opacity: 1 !important;
+}
+.auth-form-side input::placeholder { color: #657786 !important; opacity: 1; }
+.auth-form-side input:-webkit-autofill,
+.auth-form-side input:-webkit-autofill:hover,
+.auth-form-side input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #0b1c2c !important;
+  box-shadow: 0 0 0 1000px #ffffff inset !important;
+  transition: background-color 99999s ease-out 0s;
+}
+.auth-form-side a { color: #0b766e; }
+@media (max-width: 600px) {
+  .auth-wrap { padding: 1rem .65rem 2rem; align-items: flex-start; }
+  .auth-shell { border-radius: 18px; margin-top: .35rem; }
+  .auth-form-side { padding: 2rem 1.25rem !important; }
+  .auth-form-side h1 { color: #0b1c2c !important; font-size: clamp(1.8rem, 8vw, 2.25rem) !important; }
+  .auth-form-side .auth-links-row { gap: .45rem; }
+}
